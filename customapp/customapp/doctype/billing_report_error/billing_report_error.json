@@ -1,0 +1,32 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-03-02 14:04:36.371715",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "journal_entry_error_log"
+ ],
+ "fields": [
+  {
+   "fieldname": "journal_entry_error_log",
+   "fieldtype": "Link",
+   "label": "Journal Entry Error Log",
+   "options": "Billing Journal Entry Error Log"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-03-02 14:04:36.371715",
+ "modified_by": "Administrator",
+ "module": "CustomApp",
+ "name": "Billing Report Error",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-02-02 13:42:42.418453",
+ "default_view": "List",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "row",
+  "field",
+  "description",
+  "value"
+ ],
+ "fields": [
+  {
+   "fieldname": "row",
+   "fieldtype": "Data",
+   "label": "Row"
+  },
+  {
+   "fieldname": "field",
+   "fieldtype": "Data",
+   "label": "Field"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description"
+  },
+  {
+   "fieldname": "value",
+   "fieldtype": "Data",
+   "label": "Value"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2023-02-16 12:17:38.725304",
+ "modified_by": "Administrator",
+ "module": "CustomApp",
+ "name": "Journal Entry Error",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

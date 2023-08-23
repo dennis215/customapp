@@ -1,10 +1,10 @@
 from . import __version__ as app_version
 
 app_name = "customapp"
-app_title = "CustomApp"
-app_publisher = "Indah Water Konsortium"
-app_description = "ERPNext Customization"
-app_email = "customAppERPNextIWK@gmail.com"
+app_title = "customapp"
+app_publisher = "mysite"
+app_description = "Testing App"
+app_email = "customapp@email.com"
 app_license = "MIT"
 
 # Includes in <head>
@@ -113,23 +113,40 @@ app_license = "MIT"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-#	"all": [
-#		"customapp.tasks.all"
-#	],
-#	"daily": [
-#		"customapp.tasks.daily"
-#	],
-#	"hourly": [
-#		"customapp.tasks.hourly"
-#	],
-#	"weekly": [
-#		"customapp.tasks.weekly"
-#	],
-#	"monthly": [
-#		"customapp.tasks.monthly"
-#	],
-# }
+scheduler_events = {
+    "cron": {
+		"* * * * *": [
+			# "erpnext.manufacturing.doctype.bom_update_log.bom_update_log.resume_bom_cost_update_jobs",
+			"customapp.cron.doImportCollectionReport",
+            # "customapp.scheduler_import_billing_report.doImportBillingReport",
+            "customapp.deferred_revenue.deferredRevenue",
+            "customapp.erptosap.exportCRReportToSAP",
+            "customapp.erptosap.exportDRReportToSAP",
+            "customapp.erptosap.exportBRReportToSAP",
+		],
+        "*/2 * * * *": [
+			"customapp.scheduler_import_billing_report.doImportBillingReport",
+		],
+        "* * * 12 *": [
+			"customapp.accounting_period.doAccountingPeriod",
+		]
+    },
+	# "all": [
+	# 	"customapp.tasks.all"
+	# ],
+	# "daily": [
+	# 	"customapp.tasks.daily"
+	# ],
+	# "hourly": [
+	# 	"customapp.tasks.hourly"
+	# ],
+	# "weekly": [
+	# 	"customapp.tasks.weekly"
+	# ],
+	# "monthly": [
+	# 	# "customapp.tasks.monthly"
+	# ],
+}
 
 # Testing
 # -------

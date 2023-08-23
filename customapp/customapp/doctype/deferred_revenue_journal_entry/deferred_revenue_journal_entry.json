@@ -1,0 +1,78 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-03-27 16:09:03.125102",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "accounts",
+  "billing_report_csv",
+  "doc_name",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "accounts",
+   "fieldtype": "Table",
+   "label": "Accounts",
+   "options": "Deferred Journal Entry Account"
+  },
+  {
+   "fieldname": "billing_report_csv",
+   "fieldtype": "Attach",
+   "label": "Billing Report CSV"
+  },
+  {
+   "fieldname": "doc_name",
+   "fieldtype": "Data",
+   "label": "Doc Name"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "options": "Deferred Revenue Journal Entry"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-03-27 16:10:15.609089",
+ "modified_by": "Administrator",
+ "module": "Customapp",
+ "name": "Deferred Revenue Journal Entry",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "cancel":1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+    "create": 1,
+    "delete": 1,
+    "email": 1,
+    "cancel":1,
+    "export": 1,
+    "print": 1,
+    "read": 1,
+    "report": 1,
+    "role": "System User",
+    "share": 1,
+    "write": 1
+   }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

@@ -1,0 +1,97 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:{current_date}-{####}",
+ "creation": "2023-02-01 09:37:17.572198",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "posting_date",
+  "collection_report_date",
+  "column_break_3",
+  "collection_report_csv",
+  "section_break_5",
+  "error_list",
+  "current_date",
+  "seen"
+ ],
+ "fields": [
+  {
+   "default": "now",
+   "fieldname": "posting_date",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Posting Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "error_list",
+   "fieldtype": "Table",
+   "label": "Error List",
+   "options": "Journal Entry Error"
+  },
+  {
+   "default": "Today",
+   "fieldname": "current_date",
+   "fieldtype": "Date",
+   "hidden": 1,
+   "label": "Current Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "seen",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Seen"
+  },
+  {
+   "fieldname": "collection_report_date",
+   "fieldtype": "Date",
+   "label": "Collection Report Date",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_3",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "collection_report_csv",
+   "fieldtype": "Attach",
+   "label": "Collection Report CSV",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_5",
+   "fieldtype": "Section Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-02-27 09:46:12.757891",
+ "modified_by": "Administrator",
+ "module": "CustomApp",
+ "name": "Collection Journal Entry Error Log",
+ "naming_rule": "Expression (old style)",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}
