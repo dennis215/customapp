@@ -76,28 +76,28 @@ def getAmount(amt):
 
 def getVal(row,counter):
     if counter == 1:
-        val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
+        val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
         # print('val 1: ',val)
     else:
-        val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
+        val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
     
     tag = True
     if tag:
         if counter == 1:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
             # print('val 1: ',val)
         else:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
     
     return val
 
 def getValDeferred(row,isDebit):
     try:
         if isDebit:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),row['tax_code'],row['profit_or_cost_center_number'])
+            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),row['tax_code'],row['profit_or_cost_center_number'])
             # print('val 1: ',val)
         else:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),row['tax_code'],row['profit_or_cost_center_number'])
+            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),row['tax_code'],row['profit_or_cost_center_number'])
         return val
     except Exception as e:
         print('errors: ',e)
@@ -550,7 +550,7 @@ def exportCRReportToSAP():
     # if scheduler == 'Collection Report (Export)':
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Collection Report (Export)'})
-        if scheduler.report_name == '':
+        if scheduler.report_name == '' or scheduler.report_name is None:
             filename = getExportFilename(1)
         else:
             filename = scheduler.report_name
@@ -626,14 +626,12 @@ def exportCRReportToSAP():
     except Exception as e:
         print('error: ',e)
        
-
 @frappe.whitelist(allow_guest=True)
 def exportDRReportToSAP():
     print('--export Deferred Revenue----')
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Deferred Revenue (Export)'})
-        
-        if scheduler.report_name == '':
+        if scheduler.report_name == '' or scheduler.report_name is None:
             filename = getExportFilename(2)
         else:
             filename = scheduler.report_name
@@ -717,7 +715,7 @@ def exportDRReportToSAP():
                 if isDebit:
                     val = getValDeferred(row,isDebit)
                     print('val1: ',val)
-                    writer.writerow(val)
+                    writer.writerow(val)   
                     counter+=1
                 else:
                     val = getValDeferred(row,isDebit)
