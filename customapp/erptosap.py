@@ -81,13 +81,13 @@ def getVal(row,counter):
     else:
         val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
     
-    tag = True
-    if tag:
-        if counter == 1:
-            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
-            # print('val 1: ',val)
-        else:
-            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+    # tag = True
+    # if tag:
+    #     if counter == 1:
+    #         val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+    #         # print('val 1: ',val)
+    #     else:
+    #         val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
     
     return val
 
