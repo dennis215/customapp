@@ -76,18 +76,18 @@ def getAmount(amt):
 
 def getVal(row,counter):
     if counter == 1:
-        val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
+        val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
         # print('val 1: ',val)
     else:
-        val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
+        val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
     
     tag = True
     if tag:
         if counter == 1:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
             # print('val 1: ',val)
         else:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
     
     return val
 
@@ -520,7 +520,7 @@ def getExportFilename(report):
     if report == 1:
         filename += 'BRAINSCOLL'
     elif report == 2:
-        filename += 'BRAINSDEFF'
+        filename += 'BRAINSDEF'
     elif report == 3:
         filename += 'BRAINSBILL'
 
