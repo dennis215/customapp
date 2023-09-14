@@ -1,6 +1,6 @@
 import frappe
 from datetime import datetime, time, date, timedelta
-import os, csv, json, calendar, time
+import os, csv, json, calendar, time,zipfile,io,requests
 from customapp.general_function import *
 
 # def changeTemplate(cr,new_date):
@@ -172,66 +172,52 @@ from customapp.general_function import *
 #     return prev_date
 
 def checkFile():
+    cr_dict_list=[]
+    cr_list=[]
+    data = {"name": "Pfile"}
+    headers = {
+        "Content-Type": "application/json",
+    }
+    reqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    response = requests.request("POST", reqUrl,headers=headers,json=data)  
     docs = frappe.get_list('Journal Entry', filters={'report_type':'Billing'})
-    template = False
-    
-    if docs:
-        doc = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing'})
-        last_posting_date = doc.posting_date
-        month = last_posting_date.month
-        year = last_posting_date.year
-        new_posting_date = getNextDate(last_posting_date)
-        month = new_posting_date.month
-        filename = '13_string(13) perfect data.csv'
-        # print('-----------month last one: ',month)
-        if month == 2:
-            filename = '14_string(14) perfect data.csv'
-            # file = frappe.get_last_doc('File',filters={'file_name':filename})
-            # getCrString15(template,'')
-            # cr_dict,cr = getCr(filename)
-            # print('typeeeee: ',type(cr_dict))
-            # print('crdict after type: ',cr_dict)
-        elif month == 3:
-            filename = '15_string(15) perfect data.csv'
-            # file = frappe.get_last_doc('File', filters={'file_name':filename})
-            # template = True
-            # cr_dict,cr = getCrString15(template,new_posting_date)
-            # cr_dict = getCrString15(template,new_posting_date)
-            # print('typeeeee: ',type(cr_dict))
-            # print('crdict after type: ',cr_dict)
-            # cr_dict,cr = getCr(filename)
-        elif month == 4:
-            filename = '16_string(16) perfect data.csv'
-            # file = frappe.get_last_doc('File', filters={'file_name':filename})
-            # template = True
-            # cr_dict,cr = getCrString15(template,new_posting_date)
-            # cr_dict = getCrString15(template,new_posting_date)
-        cr_dict,cr = getCr(filename)
-        # cr_dict,cr = getCr(filename,new_posting_date)
-        # print('typeeeee: ',type(cr_dict))
-        # print('crdict after type: ',cr_dict)
-        
-    else:
-        new_posting_date = date(year=2023,month=1,day=1)
-        filename = '13_string(13) perfect data.csv'
-        cr_dict,cr = getCr(filename)
-        # cr_dict,cr = getCr(filename,new_posting_date)
-        month = new_posting_date.month
+    if response.status_code == 200:
+        zip = response.content
+        zip_file = zipfile.ZipFile(io.BytesIO(zip))
+        file_list = zip_file.namelist()
+        if docs:
+            doc = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing'})
+            last_posting_date = doc.posting_date
+            month = last_posting_date.month
+            year = last_posting_date.year
+            new_posting_date = getNextDate(last_posting_date)
+            month = new_posting_date.month
+        else:
+            new_posting_date = date(year=2023,month=1,day=1)
+            month = new_posting_date.month
+        for file in file_list:
+            if file in file_list:
+                cr_dict,cr = getCr_pass_file(zip_file,file)
+                for row in cr_dict:
+                    cr_dict_list.append(row)
+                for row in cr:
+                    cr_list.append(row)
+                batch_id = getBatchID(file,month)
+                print('--------------filenamessss: ',file)
 
-    date_str = getDateString(new_posting_date)
-    doc_name = 'Billing - '+date_str
-    print('date string: ',date_str)
-    
-    batch_id = getBatchID(filename,month)
-    # batch_id = getBatchID2(filename,month,new_posting_date.day)
-    print('batch id in checkfile: ',batch_id)
-    return_dict = {'doc_name':doc_name,'new_posting_date':new_posting_date,'cr_dict':cr_dict,'batch_id':batch_id}
-    try:
-        return_dict['cr'] = cr
-    except:
-        pass
-    return return_dict
-    # return doc_name,new_posting_date, cr,cr_dict, batch_id
+        date_str = getDateString(new_posting_date)
+        doc_name = 'Billing - '+date_str
+        print('date string: ',date_str)
+        print('batch id in checkfile: ',batch_id)
+        return_dict = {'doc_name':doc_name,'new_posting_date':new_posting_date,'cr_dict':cr_dict,'batch_id':batch_id}
+        try:
+            return_dict['cr_list'] = cr_list
+        except:
+            pass
+        return return_dict
+    else:
+        print("Download failed with status code:", response.status_code)
+        return 0
 
 # def test():
 #     test = False

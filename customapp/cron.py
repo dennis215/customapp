@@ -1,10 +1,9 @@
 import frappe
 from datetime import datetime,date,timedelta
-import csv, requests, json, calendar, os
+import csv, requests, json, calendar, os,zipfile,io
 # from frappe.utils.file_manager import upload
 # from frappe.core.doctype.file.file import File
 import io
-from frappe.utils import get_url
 from customapp.general_function import *
 
 def getEmail(role_name):
@@ -1436,70 +1435,51 @@ def getNewDate():
     return new_date, new_date
 
 def checkFile():
+    cr_dict_list=[]
+    cr_list=[]
+    data = {"name": "Collection"}
+    headers = {
+        "Content-Type": "application/json",
+    }
+    reqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    response = requests.request("POST", reqUrl,headers=headers,json=data)  
     cr_exist = getDocList('Journal Entry',{'report_type':'Collection'},True)
-    if cr_exist:
-        doc = getDoc('Journal Entry',{'report_type':'Collection'})
-        last_posting_date = doc.posting_date
-        month = last_posting_date.month
-        year = last_posting_date.year
-        new_posting_date = getNextDate(last_posting_date)
-        month = new_posting_date.month
-        filename = '23_string(23) perfect data.csv'
-        # if month == 1:
-        #     filename = '23_string(23) perfect data.csv'
-            # file = frappe.get_last_doc('File',filters={'file_name':filename})
-            # getCrString15(template,'')
-            # cr_dict,cr = getCr2(filename,new_posting_date)
-            # print('typeeeee: ',type(cr_dict))
-            # print('crdict after type: ',cr_dict)
-        if month == 2:
-            filename = '24_string(24) perfect data.csv'
-            # file = frappe.get_last_doc('File', filters={'file_name':filename})
-            # template = True
-            # cr_dict,cr = getCrString15(template,new_posting_date)
-            # cr_dict = getCrString15(template,new_posting_date)
-            # print('typeeeee: ',type(cr_dict))
-            # print('crdict after type: ',cr_dict)
-            # cr_dict,cr = getCr2(filename,new_posting_date)
-        elif month == 3:
-            filename = '25_string(25) perfect data.csv'
-            # file = frappe.get_last_doc('File', filters={'file_name':filename})
-            # template = True
-            # cr_dict,cr = getCrString15(template,new_posting_date)
-            # cr_dict = getCrString15(template,new_posting_date)
-            # cr_dict,cr = getCr2(filename,)
-            # print('typeeeee: ',type(cr_dict))
-            # print('crdict after type: ',cr_dict)
-        elif month == 4:
-            filename = '26_string(26) perfect data.csv'
-            # file = frappe.get_last_doc('File', filters={'file_name':filename})
-            # cr_dict,cr = getCr2(filename)
-        cr_dict,cr = getCr2(filename,new_posting_date)
-        # else:
-        #     now = datetime.now().date()
-        #     print('month: ',month)
-        #     filename = 'Invalid'
-        #     cr_dict = 'Invalid'
-        #     if month >= now.month:
-        #         raise Exception('Cannot import next month billing report')
+    if response.status_code == 200:
+        zip = response.content
+        zip_file = zipfile.ZipFile(io.BytesIO(zip))
+        file_list = zip_file.namelist()
+        if cr_exist:
+            doc = getDoc('Journal Entry',{'report_type':'Collection'})
+            last_posting_date = doc.posting_date
+            month = last_posting_date.month
+            year = last_posting_date.year
+            new_posting_date = getNextDate(last_posting_date)
+            month = new_posting_date.month
+        else:
+            new_posting_date = date(year=2023,month=1,day=1)
+            month = new_posting_date.month
+        for file in file_list:
+            if file in file_list:
+                cr_dict,cr = getCr2_pass_file(zip_file,file,new_posting_date)
+                for row in cr_dict:
+                    cr_dict_list.append(row)
+                for row in cr:
+                    cr_list.append(row)
+                batch_id = getBatchID2(file,month,new_posting_date.day)
+                print('--------------filenamessss: ',file)
+
+        date_str = getDateString(new_posting_date)
+        doc_name = 'Collection - '+date_str
+        print('batch id in checkfile: ',batch_id)
+        return_dict = {'doc_name':doc_name,'new_posting_date':new_posting_date,'cr_dict':cr_dict_list,'batch_id':batch_id}
+        try:
+            return_dict['cr_list'] = cr_list
+        except:
+            pass
+        return return_dict
     else:
-        new_posting_date = date(year=2023,month=1,day=1)
-        filename = '23_string(23) perfect data.csv'
-        cr_dict,cr = getCr2(filename,getDateString(new_posting_date))
-        month = new_posting_date.month
-    print('--------------filenamessss: ',filename)
-    date_str = getDateString(new_posting_date)
-    doc_name = 'Collection - '+date_str
-
-    batch_id = getBatchID2(filename,month,new_posting_date.day)
-    print('batch id in checkfile: ',batch_id)
-    return_dict = {'doc_name':doc_name,'new_posting_date':new_posting_date,'cr_dict':cr_dict,'batch_id':batch_id}
-
-    try:
-        return_dict['cr'] = cr
-    except:
-        pass
-    return return_dict
+        print("Download failed with status code:", response.status_code)
+        return 0
 
 def doImportCollectionReport():
     global domain

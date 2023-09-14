@@ -380,6 +380,25 @@ def getCr(filename):
     print('typeee getCr: ',type(cr_dict))
     return cr_dict,cr
 
+def getCr_pass_file(zip,file):
+    print('file: ',file)
+    # print(file_url)
+    cr = []
+    with zip.open(file, 'r') as csv_file:
+        # file.read().decode('utf-8')
+        read_file = csv_file.read().decode('utf-8')
+        reader = csv.reader(read_file.strip().splitlines())
+        print(read_file)
+        for r in reader:
+            print('row: ',r)
+            cr.append(r)
+
+    print('-----------------------getCrString15-------------------',cr[1][1])
+    print(cr)
+    cr_dict = getDict2(cr)
+    print('typeee getCr: ',type(cr_dict))
+    return cr_dict,cr
+
 # def getCr(filename,posting_dates):
 #     print('filename in getcr: ',filename)
 #     file = frappe.get_last_doc('File', filters={'file_name':filename})
@@ -1020,6 +1039,26 @@ def getCr2(filename,posting_dates):
         # print(reader)
         for r in reader:
             # print('row: ',r)
+            r[30] = posting_dates
+            cr.append(r)
+
+    print('-----------------------getCrString15-------------------',cr[1][1])
+    print(cr)
+    cr_dict = getDict2(cr)
+    print('typeee getCr: ',type(cr_dict))
+    return cr_dict,cr
+
+def getCr2_pass_file(zip,file,posting_dates):
+    print('file: ',file)
+    # print(file_url)
+    cr = []
+    with zip.open(file, 'r') as csv_file:
+        # file.read().decode('utf-8')
+        read_file = csv_file.read().decode('utf-8')
+        reader = csv.reader(read_file.strip().splitlines())
+        print(read_file)
+        for r in reader:
+            print('row: ',r)
             r[30] = posting_dates
             cr.append(r)
 
