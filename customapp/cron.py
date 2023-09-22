@@ -1445,7 +1445,7 @@ def checkFile():
     # reqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
     # Staging
     reqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    response = requests.request("POST", reqUrl,headers=headers,json=data)  
+    response = requests.request("POST", reqUrl,headers=headers,json=data, verify=False)  
     cr_exist = getDocList('Journal Entry',{'report_type':'Collection'},True)
     if response.status_code == 200:
         zip = response.content
