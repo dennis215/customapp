@@ -725,7 +725,7 @@ def getCR(start_end_year,existcr):
     if 'filename=string.csv.tmp' in msg:
         existcr['exist'] = False
         return False,''
-        raise Exception('The file you are trying to get is not in CSV format. Please try again later.')
+        # raise Exception('The file you are trying to get is not in CSV format. Please try again later.')
     else:
         textt = response.content.decode('utf-8')
         cr = csv.reader(textt.splitlines(), delimiter=',')
@@ -1531,7 +1531,7 @@ def doImportCollectionReportSingle(cr_dict,cr,batch_id,new_date):
     date_str = getDateString(new_date)
     if exist:
         print('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
-        # raise Exception('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
+        raise Exception('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
     else:
         print('------------------date is ',new_date)
 
