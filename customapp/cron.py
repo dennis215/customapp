@@ -725,7 +725,7 @@ def getCR(start_end_year,existcr):
     if 'filename=string.csv.tmp' in msg:
         existcr['exist'] = False
         return False,''
-        # raise Exception('The file you are trying to get is not in CSV format. Please try again later.')
+        raise Exception('The file you are trying to get is not in CSV format. Please try again later.')
     else:
         textt = response.content.decode('utf-8')
         cr = csv.reader(textt.splitlines(), delimiter=',')
