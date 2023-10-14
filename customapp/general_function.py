@@ -167,7 +167,7 @@ def getBatchID(filename,month):
     print('noooooo')
     return split[0]
 
-def getBatchID2(filename,month,day):
+def getBatchID2(filename,days):
     # if month >= 3:
     #     month+=1
     #     diff = month - 3
@@ -175,7 +175,6 @@ def getBatchID2(filename,month,day):
     #     print('yessss: ',diff)
     #     return str(batch_id)
     split = filename.split('_')
-    days = str(day)
     if len(days) < 2:
         days = '0'+str(days)
     batch_id = split[0]+days
@@ -1048,7 +1047,7 @@ def getCr2(filename,posting_dates):
     print('typeee getCr: ',type(cr_dict))
     return cr_dict,cr
 
-def getCr2_pass_file(zip,file,posting_dates):
+def getCr2_pass_file(zip,file):
     print('file: ',file)
     # print(file_url)
     cr = []
@@ -1059,7 +1058,6 @@ def getCr2_pass_file(zip,file,posting_dates):
         print(read_file)
         for r in reader:
             print('row: ',r)
-            r[30] = posting_dates
             cr.append(r)
 
     print('-----------------------getCrString15-------------------',cr[1][1])

@@ -1434,57 +1434,18 @@ def getNewDate():
         new_date = date(year=2023,month=1,day=1)
     return new_date, new_date
 
-def checkFile():
-    cr_dict_list=[]
-    cr_list=[]
-    data = {"name": "Collection"}
-    headers = {
-        "Content-Type": "application/json",
-    }
-    # dev
-    # reqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    # Staging
-    reqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    response = requests.request("POST", reqUrl,headers=headers,json=data, verify=False)  
-    cr_exist = getDocList('Journal Entry',{'report_type':'Collection'},True)
-    if response.status_code == 200:
-        zip = response.content
-        zip_file = zipfile.ZipFile(io.BytesIO(zip))
-        file_list = zip_file.namelist()
-        if cr_exist:
-            doc = getDoc('Journal Entry',{'report_type':'Collection'})
-            last_posting_date = doc.posting_date
-            month = last_posting_date.month
-            year = last_posting_date.year
-            new_posting_date = getNextDate(last_posting_date)
-            month = new_posting_date.month
-        else:
-            new_posting_date = date(year=2023,month=1,day=1)
-            month = new_posting_date.month
-        for file in file_list:
-            if file in file_list:
-                cr_dict,cr = getCr2_pass_file(zip_file,file,new_posting_date)
-                for row in cr_dict:
-                    cr_dict_list.append(row)
-                for row in cr:
-                    cr_list.append(row)
-                batch_id = getBatchID2(file,month,new_posting_date.day)
-                print('--------------filenamessss: ',file)
+def checkFile(cr_dict,cr,batch_id,new_date):
+    date_str = getDateString(new_date)
+    doc_name = 'Collection - '+date_str
+    print('batch id in checkfile: ',batch_id)
+    return_dict = {'doc_name':doc_name,'new_posting_date':new_date,'cr_dict':cr_dict,'batch_id':batch_id}
+    try:
+        return_dict['cr'] = cr
+    except:
+        pass
+    return return_dict
 
-        date_str = getDateString(new_posting_date)
-        doc_name = 'Collection - '+date_str
-        print('batch id in checkfile: ',batch_id)
-        return_dict = {'doc_name':doc_name,'new_posting_date':new_posting_date,'cr_dict':cr_dict_list,'batch_id':batch_id}
-        try:
-            return_dict['cr_list'] = cr_list
-        except:
-            pass
-        return return_dict
-    else:
-        print("Download failed with status code:", response.status_code)
-        return 0
-
-def doImportCollectionReport():
+def doImportCollectionReportSingle(cr_dict,cr,batch_id,new_date):
     global domain
     domain = getDomain()
     scheduler_cr = frappe.get_last_doc('Scheduler Manager',filters={'name':'Collection Report (Import)'})
@@ -1560,7 +1521,7 @@ def doImportCollectionReport():
     #     pass
     # return return_dict
     # --------------------------------------
-    return_dict = checkFile()
+    return_dict = checkFile(cr_dict,cr,batch_id,new_date)
     doc_name = return_dict['doc_name']
     cr_dict = return_dict['cr_dict']
     batch_id = return_dict['batch_id']
@@ -1570,7 +1531,7 @@ def doImportCollectionReport():
     date_str = getDateString(new_date)
     if exist:
         print('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
-        raise Exception('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
+        # raise Exception('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
     else:
         print('------------------date is ',new_date)
 
@@ -1881,6 +1842,32 @@ def checkJEExist(start_date, end_date):
 
 #     return domain
 
-@frappe.whitelist(allow_guest=True)
-def importCollectionReport():
-    doImportCollectionReport()
+# @frappe.whitelist(allow_guest=True)
+def doImportCollectionReport():
+    data = {"name": "Collection"}
+    headers = {
+        "Content-Type": "application/json",
+    }
+    # dev
+    # reqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    # Staging
+    reqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    response = requests.request("POST", reqUrl,headers=headers,json=data, verify=False)  
+    if response.status_code == 200:
+        zip = response.content
+        zip_file = zipfile.ZipFile(io.BytesIO(zip))
+        file_list = zip_file.namelist()
+        for file in file_list:
+            if file in file_list:
+                cr_dict,cr = getCr2_pass_file(zip_file,file)
+                split = file.split('_')
+                fileDate = split[2].split('.')[0]
+                dateSplit = fileDate.split('-')
+                year=dateSplit[0]
+                month=dateSplit[1]
+                day=dateSplit[2]
+                new_date = date(year=int(year),month=int(month),day=int(day))
+                batch_id = getBatchID2(file,day)
+                print('--------------filenamessss: ',file)
+                doImportCollectionReportSingle(cr_dict,cr,batch_id,new_date)
+    
