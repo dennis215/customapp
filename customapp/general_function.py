@@ -223,18 +223,19 @@ def checkExist(tag_id, report):
 
 
 # for both billing and collection
-def checkEmpty(f1,row,errors,error_list):
+def checkEmpty(file,f1,row,errors,error_list):
     field = f1['field']
     val = f1['value']
     error = {
+        'filename':file,      
         'row':row,
         'field':field,
-        'val':val
+        'value':val
     }
 
     if val == '':
         errors['error'] = True
-        error['desc'] = 'Missing Value'
+        error['description'] = 'Missing Value'
         error_list.append(error)
 
 def getSite():
@@ -1066,7 +1067,7 @@ def getCr2_pass_file(zip,file):
     print('typeee getCr: ',type(cr_dict))
     return cr_dict,cr
 
-def getError2(row_list,row,error_list,errors,balance):
+def getError2(file,row_list,row,error_list,errors,balance):
     year = row_list['year']
     account_number = row_list['account_number']
     cost_center_number = row_list['cost_center_number']
@@ -1098,35 +1099,35 @@ def getError2(row_list,row,error_list,errors,balance):
     
     # year
     result = True
-    checkEmpty(objYear,row,errors,error_list)
-    result = checkError2(objYear,2,'number',row,errors,error_list,'')  # check number type
+    checkEmpty(file,objYear,row,errors,error_list)
+    result = checkError2(file,objYear,2,'number',row,errors,error_list,'')  # check number type
     if result:
         current_year = datetime.now().date().year
-        checkError2(objYear,4,str(current_year),row,errors,error_list,'')  # check current year
+        checkError2(file,objYear,4,str(current_year),row,errors,error_list,'')  # check current year
     # account
-    checkEmpty(objAccount,row,errors,error_list)
-    checkError2(objAccount,2,'number',row,errors,error_list,'')  # check number type
-    checkError2(objAccount,1,'',row,errors,error_list,'')    # check exist
+    checkEmpty(file,objAccount,row,errors,error_list)
+    checkError2(file,objAccount,2,'number',row,errors,error_list,'')  # check number type
+    checkError2(file,objAccount,1,'',row,errors,error_list,'')    # check exist
     # # cost center
-    checkEmpty(objCost,row,errors,error_list)
-    checkError2(objCost,1,'',row,errors,error_list,'') # check exist
+    checkEmpty(file,objCost,row,errors,error_list)
+    checkError2(file,objCost,1,'',row,errors,error_list,'') # check exist
     # #currency
     # checkError(objCurrency,2,'string',row,errors,error_list,'') # check string type
-    checkEmpty(objCurrency,row,errors,error_list)
-    checkError2(objCurrency,4,'MYR',row,errors,error_list,'') # check value MYR
+    checkEmpty(file,objCurrency,row,errors,error_list)
+    checkError2(file,objCurrency,4,'MYR',row,errors,error_list,'') # check value MYR
     # # debit
     if amt_type == 'debit':
         f1 = {'field':'debit_in_account_currency','value':float(debit_credit)}
-        checkError2(f1,2,'float',row,errors,error_list,'') # check float type
-        checkEmpty(f1,row,errors,error_list)
+        checkError2(file,f1,2,'float',row,errors,error_list,'') # check float type
+        checkEmpty(file,f1,row,errors,error_list)
         # balance = checkError(f1,'','',row,errors,error_list,'') # get value
-        checkError2(f1,'','',row,errors,error_list,balance) # get value
+        checkError2(file,f1,'','',row,errors,error_list,balance) # get value
     # credit
     elif amt_type == 'credit':
         f1 = {'field':'credit_in_account_currency','value':abs(float(debit_credit))}
-        checkError2(f1,2,'float',row,errors,error_list,'') # check float type
-        checkEmpty(f1,row,errors,error_list)
-        checkError2(f1,'','',row,errors,error_list,balance)  # check balance
+        checkError2(file,f1,2,'float',row,errors,error_list,'') # check float type
+        checkEmpty(file,f1,row,errors,error_list)
+        checkError2(file,f1,'','',row,errors,error_list,balance)  # check balance
     
     # # user remark
     # checkEmpty(objUserRemark,row,errors,error_list)
@@ -1145,15 +1146,16 @@ def getError2(row_list,row,error_list,errors,balance):
 
     return balance  
 
-def checkError2(f1,f2,f3,row,errors,error_list,balance):
+def checkError2(file,f1,f2,f3,row,errors,error_list,balance):
     # f1(data), f2(error type), f3(number/string, length), f4(),balance
     # checkExist('Account','account_number',row_list['account_number'],row,error_list,errors)
     field = f1['field']
     val = f1['value']
     error = {
+        'filename':file,
         'row':row,
         'field':field,
-        'val':val
+        'value':val
     }
 
     if f2 == 1: # check record existence and ..
@@ -1163,7 +1165,7 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
                 obj = frappe.get_last_doc(doctype,filters={field:val})
             except:
                 errors['error'] = True
-                error['desc'] = 'Invalid Data'
+                error['description'] = 'Invalid Data'
                 error_list.append(error)
                 # print('error: ',error_list)
         else:
@@ -1177,7 +1179,7 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
 
             if filter_count < 1:
                 errors['error'] = True
-                error['desc'] = doctype + ' Not Exist'
+                error['description'] = doctype + ' Not Exist'
                 error_list.append(error)
                 # print(error_list)
 
@@ -1187,7 +1189,7 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
                 return True
             else:
                 errors['error'] = True
-                error['desc'] = 'Invalid Format'
+                error['description'] = 'Invalid Format'
                 error_list.append(error)
                 return False
                 # print(error_list)
@@ -1199,7 +1201,7 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
             except:
                 # print('type: ',type(val))
                 errors['error'] = True
-                error['desc'] = 'Invalid Format'
+                error['description'] = 'Invalid Format'
                 error_list.append(error)
                 return False
                 # print(error_list)
@@ -1216,14 +1218,14 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
                     # print(val)
                     if val <= 0.0:
                         errors['error'] = True
-                        error['desc'] = 'Invalid Value'
+                        error['description'] = 'Invalid Value'
                         error_list.append(error)
                         return False
                     return True
                 return True
             except:
                 errors['error'] = True
-                error['desc'] = 'Invalid Format'
+                error['description'] = 'Invalid Format'
                 error_list.append(error)
                 return False
                 # print(error_list)
@@ -1237,7 +1239,7 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
             length = len(valstr)
             if length != f3:
                 errors['error'] = True
-                error['desc'] = 'Invalid Length'
+                error['description'] = 'Invalid Length'
                 error_list.append(error)
                 # print(error_list)
             else:
@@ -1246,12 +1248,12 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
                     year = str(val)[2:]
                     if int(month) > 12 or int(month) < 0:
                         errors['error'] = True
-                        error['desc'] = 'Invalid Month Value'
+                        error['description'] = 'Invalid Month Value'
                         error_list.append(error)
                         # print(error_list)
                     if int(year) < 0:
                         errors['error'] = True
-                        error['desc'] = 'Invalid Year Value'
+                        error['description'] = 'Invalid Year Value'
                         error_list.append(error)
                         # print(error_list)
     
@@ -1264,9 +1266,9 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
         if val != f3:
             errors['error'] = True
             if field == 'currency':
-                error['desc'] = 'Invalid Currency'
+                error['description'] = 'Invalid Currency'
             elif field == 'year':
-                error['desc'] = 'Invalid Year'
+                error['description'] = 'Invalid Year'
             error_list.append(error)
             # print(error_list)
 
@@ -1287,13 +1289,13 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
         user_day = int(user_date[4:6])
         if user_month < 0 or user_month > 12:
             errors['error'] = True
-            error['desc'] = 'Invalid Date'
+            error['description'] = 'Invalid Date'
             error_list.append(error)
         else:
             first_day, lastday = calendar.monthrange(user_year,user_month)
             if user_day < 0 or user_day > lastday:
                 errors['error'] = True
-                error['desc'] = 'Invalid Date'
+                error['description'] = 'Invalid Date'
                 error_list.append(error)
 
         # print('year: ',str(int(user_year)),' '+str(int(user_month))+' '+str(int(user_day)))
@@ -1303,7 +1305,7 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
         minute = int(user_time[2:])
         if hour > 23 or hour < 0 or minute > 59 or minute < 0:
             errors['error'] = True
-            error['desc'] = 'Invalid Time'
+            error['description'] = 'Invalid Time'
             error_list.append(error)
             # print(error_list)
 
@@ -1312,7 +1314,7 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
         current_date = current_date.strftime('%Y-%m-%d')
         if current_date != val:
             errors['error'] = True
-            error['desc'] = 'Wrong Date'
+            error['description'] = 'Wrong Date'
             error_list.append(error)
             # print(error_list)
 
@@ -1327,20 +1329,20 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
             month = val_str[:2]
         else:
             errors['error'] = True
-            error['desc'] = 'Invalid Length'
+            error['description'] = 'Invalid Length'
             error_list.append(error)
             # print(error_list)
 
         if int(month) <= 0 or int(month) > 12:
             errors['error'] = True
-            error['desc'] = 'Invalid Month'
+            error['description'] = 'Invalid Month'
             error_list.append(error)
             # print(error_list)
 
         year = val_str[-2:]
         if int(year) <= 0:
             errors['error'] = True
-            error['desc'] = 'Invalid Year'
+            error['description'] = 'Invalid Year'
             error_list.append(error)
             # print(error_list)
 
@@ -1355,9 +1357,9 @@ def checkError2(f1,f2,f3,row,errors,error_list,balance):
                 error['row'] = row
                 error['val'] = balance['val']
                 if field == 'debit_in_account_currency':
-                    error['desc'] = 'Not Balanced With Credit Row '+str(row-1)
+                    error['description'] = 'Not Balanced With Credit Row '+str(row-1)
                 elif field == 'credit_in_account_currency':
-                    error['desc'] = 'Not Balanced With Debit Row '+str(row-1)
+                    error['description'] = 'Not Balanced With Debit Row '+str(row-1)
                 print('error1: ',error,' val: ',val,' another: ',balance['val'])
                 error_list.append(error)
 
@@ -1431,7 +1433,7 @@ def checkDominant2(f1,errors,error_list):
 
                 error_list.append(error)
 
-def handleError2(cr):
+def handleError2(file,cr):
     # print('CR:')
     # print(cr)
     error_list = []
@@ -1465,7 +1467,7 @@ def handleError2(cr):
             
         # if counter == 1:
         balance['counter'] = balance_counter
-        getError2(row,row_count,error_list,errors,balance)
+        getError2(file,row,row_count,error_list,errors,balance)
 
         if balance_counter == 1:
             try:
@@ -1476,7 +1478,7 @@ def handleError2(cr):
 
         elif balance_counter == 2:
             # balance['counter'] = balance_counter
-            getError2(row,row_count,error_list,errors,balance)
+            getError2(file,row,row_count,error_list,errors,balance)
             balance_counter = 1
             
 
