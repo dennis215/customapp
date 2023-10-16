@@ -1855,7 +1855,7 @@ def doImportCollectionReport():
     # returnReqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD//ERPNextFileChecking'
     # Staging
     getFileReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    getFileReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking'
+    returnReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking'
     response = requests.request("POST", getFileReqUrl,headers=headers,json=getFileData, verify=False)  
     if response.status_code == 200:
         zip = response.content
