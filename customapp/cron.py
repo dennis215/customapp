@@ -1068,8 +1068,8 @@ def createErrorLog(much,error_list,errordate):
         errorlog.append('error_list',{
             'row':e['row'],
             'field':e['field'],
-            'value':e['val'],
-            'description':e['desc']
+            'value':e['value'],
+            'description':e['description']
         })
         print('---------------------e----------------------------------------------')
         print(e)
@@ -1445,7 +1445,7 @@ def checkFile(cr_dict,cr,batch_id,new_date):
         pass
     return return_dict
 
-def doImportCollectionReportSingle(cr_dict,cr,batch_id,new_date):
+def doImportCollectionReportSingle(file,cr_dict,cr,batch_id,new_date):
     global domain
     domain = getDomain()
     scheduler_cr = frappe.get_last_doc('Scheduler Manager',filters={'name':'Collection Report (Import)'})
@@ -1535,7 +1535,7 @@ def doImportCollectionReportSingle(cr_dict,cr,batch_id,new_date):
     else:
         print('------------------date is ',new_date)
 
-    error,error_log_name_list,error_link = importfrombs(cr_dict)
+    error,error_log_name_list,error_link,error_list = importfrombs(file,cr_dict)
     if error:
         # for log in error_log_name_list:
         #     doc.append('journal_entry_error_log',{
@@ -1639,8 +1639,9 @@ def doImportCollectionReportSingle(cr_dict,cr,batch_id,new_date):
     # else:
     #     createJE(cr)
     print('DONE SCHEDULER')
+    return error_list
 
-def importfrombs(cr_dict):
+def importfrombs(file,cr_dict):
     cr_date = datetime.now().strftime('%Y-%m-%d %H-%M-%S')
     error_log_name_list = []
     journal_entry_name_list = []
@@ -1648,7 +1649,7 @@ def importfrombs(cr_dict):
     # print('cr-dict: -------------------')
     # print(cr_dict)
 
-    error_result, error_list = handleError2(cr_dict)
+    error_result, error_list = handleError2(file,cr_dict)
     print('ERROR RESULT: ',error_result)
     print('ERROR LIST: ', error_list)
     print('LENGTH CR: ',len(cr_dict))
@@ -1656,8 +1657,8 @@ def importfrombs(cr_dict):
         error_link,error_name = createErrorLog(False,error_list,cr_date)
         error_log_name_list.append(error_name)
         # frappe.msgprint('There is error when trying to import the Collection Report. You can see the error here ' +error_link)
-        return error_result,error_log_name_list,error_link
-    return error_result,'',''
+        return error_result,error_log_name_list,error_link,error_list
+    return error_result,'','',error_list
 
     # journal_links = ''
     # # for cr in cr:
@@ -1844,15 +1845,18 @@ def checkJEExist(start_date, end_date):
 
 # @frappe.whitelist(allow_guest=True)
 def doImportCollectionReport():
-    data = {"name": "Collection"}
+    errors=[]
+    getFileData = {"name": "Collection"}
     headers = {
         "Content-Type": "application/json",
     }
     # dev
-    # reqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    # getFileReqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    # returnReqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD//ERPNextFileChecking'
     # Staging
-    reqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    response = requests.request("POST", reqUrl,headers=headers,json=data, verify=False)  
+    getFileReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    getFileReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking'
+    response = requests.request("POST", getFileReqUrl,headers=headers,json=getFileData, verify=False)  
     if response.status_code == 200:
         zip = response.content
         zip_file = zipfile.ZipFile(io.BytesIO(zip))
@@ -1869,5 +1873,13 @@ def doImportCollectionReport():
                 new_date = date(year=int(year),month=int(month),day=int(day))
                 batch_id = getBatchID2(file,day)
                 print('--------------filenamessss: ',file)
-                doImportCollectionReportSingle(cr_dict,cr,batch_id,new_date)
+                error_list = doImportCollectionReportSingle(file,cr_dict,cr,batch_id,new_date)
+                errors.append(error_list)
+    flattened_data = [item for sublist in errors for item in sublist]
+    returnData =  {"name": "Collection", "errorFileSummary":flattened_data}
+    print('errors: ',returnData)
+    response = requests.request("POST", returnReqUrl,headers=headers,json=getFileData, verify=False)  
+    if response.status_code == 200:
+        print("Request was successful (Status Code 200).")
+    
     
