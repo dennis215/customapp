@@ -10,10 +10,12 @@ def getRow(accounts,row_list,tag_id):
     tag = True
     counter = 1
     for a in accounts:
-        # print('account: ',a.name)
+        if(a.debit_in_account_currency==0):
+            counter=2
+        else:
+            counter=1
+        print('account: ',a.name)
         if counter == 1:
-            counter+=1
-
             row = {
                 'year':a.year,
                 'account_number':a.account_number,
@@ -26,12 +28,12 @@ def getRow(accounts,row_list,tag_id):
             }
             if tag:
                 row['tag_id'] = tag_id
-
+            print('----------debit-----------------')
+            print(row)
             # print('row 1: ',row)
             row_list.append(row)
         
         elif counter == 2:
-            counter = 1
             row = {
                 'year':a.year,
                 'account_number':a.account_number,
@@ -45,6 +47,8 @@ def getRow(accounts,row_list,tag_id):
             if tag:
                 row['tag_id'] = tag_id
             # print('row 2: ',row)
+            print('----------credit-----------------')
+            print(row)
             row_list.append(row)
 
 def getDate(dates):
@@ -512,7 +516,9 @@ def uploadToFtpServer(csv_string,filename,server_path):
         print('Error: ',filename,' Cannot be Uploaded!')
 
 def createCSVExport(value,filename,path):
-    csv_string = value
+    csv_string = value.replace('"', '')
+    print('------------------csv_string')
+    print(csv_string)
     uploadToFtpServer(csv_string,filename,path)
 
 def getExportFilename(report):
@@ -540,7 +546,7 @@ def getExportFilename(report):
     print('hour: ',hour)
     print('minute: ',minute)
     print('now: ',now)
-
+    print('filename: ',filename)
 
     return filename
 
@@ -551,6 +557,7 @@ def exportCRReportToSAP():
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Collection Report (Export)'})
         if scheduler.report_name == '' or scheduler.report_name is None:
+            print('generate file name: ')
             filename = getExportFilename(1)
         else:
             filename = scheduler.report_name
@@ -591,6 +598,8 @@ def exportCRReportToSAP():
                 for j in journals:
                     journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
                     journal_list.append(journal)
+                    print('----------journal_list-----------------')
+                    print(journal_list)
             else:
                 print('No Collection Report is available to be exported!')
                 return
@@ -609,16 +618,21 @@ def exportCRReportToSAP():
         writer = UnicodeWriter()
         for rows in row_lists:
             # writer = UnicodeWriter()
-            counter = 1
             for row in rows:
-                if counter == 1:
-                    val = getVal(row,counter)
-                    writer.writerow(val)
-                    counter+=1
-                elif counter == 2:
-                    val = getVal(row,counter)
-                    writer.writerow(val)
+                if('debit' in row):
                     counter = 1
+                else:
+                    counter = 2
+                if counter == 1:
+                    print('----------debit-----------------')
+                    val = getVal(row,counter)
+                    writer.writerow(val)
+                elif counter == 2:
+                    print('----------credit-----------------')
+                    val = getVal(row,counter)
+                    writer.writerow(val)
+        print('----------writer-----------------')
+        print(writer)
         print('----------done unicodeWriter-----------------')
         createCSVExport(writer.getvalue(),filename,server_path)
         print('-----------done everything------------------')
