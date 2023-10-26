@@ -7,9 +7,13 @@ from ftplib import FTP
 import io
 
 def getRow(accounts,row_list,tag_id):
+    current_datetime=getDateTimeString()
     tag = True
     counter = 1
     for a in accounts:
+        split_remark = a.remark.split('/')
+        first_half_remark = split_remark[0].strip()
+        remarks = first_half_remark + "/ "+current_datetime
         if(a.debit_in_account_currency==0):
             counter=2
         else:
@@ -22,7 +26,7 @@ def getRow(accounts,row_list,tag_id):
                 'cost_center_number':a.cost_center_number,
                 'currency':a.currency,
                 'debit':a.debit_in_account_currency,
-                'remark':a.remark,
+                'remark':remarks,
                 'group':a.group,
                 'posting_date':a.posting_date,
             }
@@ -40,7 +44,7 @@ def getRow(accounts,row_list,tag_id):
                 'cost_center_number':a.cost_center_number,
                 'currency':a.currency,
                 'credit':a.credit_in_account_currency,
-                'remark':a.remark,
+                'remark':remarks,
                 'group':a.group,
                 'posting_date':a.posting_date
             }
@@ -59,6 +63,17 @@ def getDate(dates):
 def getDateString(dates):
     dates = dates.strftime('%Y-%m-%d')
     return dates
+
+def getDateTimeString():
+    current_datetime = datetime.now()
+    year = current_datetime.strftime("%y")
+    month = current_datetime.strftime("%m")
+    day = current_datetime.strftime("%d")
+    hour = current_datetime.strftime("%H")
+    minute = current_datetime.strftime("%M")
+    formatted_datetime = year + month + day + hour + minute
+    print(formatted_datetime)
+    return formatted_datetime
 
 def getAmount(amt):
     try:
@@ -614,21 +629,42 @@ def exportCRReportToSAP():
         if len(journal_list) <= 0:
             print('No Journal Entry Found!')
             return
-        
         writer = UnicodeWriter()
         for rows in row_lists:
+            # Sum up credit and debit
+            cumulative_sums = {}
+            for entry in rows:
+                key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'])
+                if key not in cumulative_sums:
+                    cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'tag_id': entry['tag_id']}
+                cumulative_sums[key]['credit'] += entry.get('credit', 0)
+                cumulative_sums[key]['debit'] += entry.get('debit', 0)
+                # Balance the credit and debit
+                for key, values in cumulative_sums.items():
+                    credit = values['credit']
+                    debit = values['debit']
+                    if credit > debit:
+                        values['credit'] = credit - debit
+                        values['debit'] = 0.0
+                    else:
+                        values['credit'] = 0.0
+                        values['debit'] = debit - credit
+
+
+            # Convert the dictionary values to a list
+            result = list(cumulative_sums.values())
+            for entry in result:
+                print(entry)
             # writer = UnicodeWriter()
-            for row in rows:
-                if('debit' in row):
+            for row in result:
+                if(row['debit'] != 0):
                     counter = 1
                 else:
                     counter = 2
                 if counter == 1:
-                    print('----------debit-----------------')
                     val = getVal(row,counter)
                     writer.writerow(val)
                 elif counter == 2:
-                    print('----------credit-----------------')
                     val = getVal(row,counter)
                     writer.writerow(val)
         print('----------writer-----------------')
