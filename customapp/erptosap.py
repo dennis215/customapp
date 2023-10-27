@@ -630,43 +630,47 @@ def exportCRReportToSAP():
             print('No Journal Entry Found!')
             return
         writer = UnicodeWriter()
+        combined_array = []
         for rows in row_lists:
-            # Sum up credit and debit
-            cumulative_sums = {}
-            for entry in rows:
-                key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'])
-                if key not in cumulative_sums:
-                    cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'tag_id': entry['tag_id']}
-                cumulative_sums[key]['credit'] += entry.get('credit', 0)
-                cumulative_sums[key]['debit'] += entry.get('debit', 0)
-                # Balance the credit and debit
-                for key, values in cumulative_sums.items():
-                    credit = values['credit']
-                    debit = values['debit']
-                    if credit > debit:
-                        values['credit'] = credit - debit
-                        values['debit'] = 0.0
-                    else:
-                        values['credit'] = 0.0
-                        values['debit'] = debit - credit
-
-
-            # Convert the dictionary values to a list
-            result = list(cumulative_sums.values())
-            for entry in result:
-                print(entry)
-            # writer = UnicodeWriter()
-            for row in result:
-                if(row['debit'] != 0):
-                    counter = 1
+            for item in rows:
+                combined_array.append(item)
+        # Sum up credit and debit
+        cumulative_sums = {}
+        for entry in combined_array:
+            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'])
+            if key not in cumulative_sums:
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'tag_id': entry['tag_id']}
+            cumulative_sums[key]['credit'] += entry.get('credit', 0)
+            cumulative_sums[key]['debit'] += entry.get('debit', 0)
+            # Balance the credit and debit
+            for key, values in cumulative_sums.items():
+                credit = values['credit']
+                debit = values['debit']
+                if credit > debit:
+                    values['credit'] = credit - debit
+                    values['debit'] = 0.0
                 else:
-                    counter = 2
-                if counter == 1:
-                    val = getVal(row,counter)
-                    writer.writerow(val)
-                elif counter == 2:
-                    val = getVal(row,counter)
-                    writer.writerow(val)
+                    values['credit'] = 0.0
+                    values['debit'] = debit - credit
+
+
+        # Convert the dictionary values to a list
+        result = list(cumulative_sums.values())
+        for entry in result:
+            print('----------entry inresult-----------------')
+            print(entry)
+        # writer = UnicodeWriter()
+        for row in result:
+            if(row['debit'] != 0):
+                counter = 1
+            else:
+                counter = 2
+            if counter == 1:
+                val = getVal(row,counter)
+                writer.writerow(val)
+            elif counter == 2:
+                val = getVal(row,counter)
+                writer.writerow(val)
         print('----------writer-----------------')
         print(writer)
         print('----------done unicodeWriter-----------------')
