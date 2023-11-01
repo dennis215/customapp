@@ -156,7 +156,7 @@ def sendEmail(msg,subject,doctype,name,role):
     }
     frappe.enqueue(method=frappe.sendmail, queue='short',timeout='300',**email_args)
 
-def getBatchID(filename,month):
+def getBatchID(filename,days):
     # if month >= 3:
     #     month+=1
     #     diff = month - 3
@@ -164,8 +164,12 @@ def getBatchID(filename,month):
     #     print('yessss: ',diff)
     #     return str(batch_id)
     split = filename.split('_')
+    if len(days) < 2:
+        days = '0'+str(days)
+    batch_id = split[0]+days
     print('noooooo')
-    return split[0]
+    # return split[0]
+    return batch_id
 
 def getBatchID2(filename,days):
     # if month >= 3:
@@ -478,7 +482,7 @@ def getPreviousDate(dates):
     prev_date = date(day=days[1],month=month,year=year)
     return prev_date
 
-def getError(row_list,row,error_list,errors,balance):
+def getError(file,row_list,row,error_list,errors,balance):
     year = row_list['year']
     account_number = row_list['account_number']
     cost_center_number = row_list['cost_center_number']
@@ -527,59 +531,59 @@ def getError(row_list,row,error_list,errors,balance):
     
     # year
     result = True
-    checkEmpty(objYear,row,errors,error_list)
-    result = checkError(objYear,2,'number',row,errors,error_list,'')  # check number type
+    checkEmpty(file,objYear,row,errors,error_list)
+    result = checkError(file,objYear,2,'number',row,errors,error_list,'')  # check number type
     if result:
         current_year = datetime.now().date().year
-        checkError(objYear,4,str(current_year),row,errors,error_list,'')  # check current year
+        checkError(file,objYear,4,str(current_year),row,errors,error_list,'')  # check current year
     # account
-    checkEmpty(objAccount,row,errors,error_list)
-    checkError(objAccount,2,'number',row,errors,error_list,'')  # check number type
-    checkError(objAccount,1,'',row,errors,error_list,'')    # check exist
+    checkEmpty(file,objAccount,row,errors,error_list)
+    checkError(file,objAccount,2,'number',row,errors,error_list,'')  # check number type
+    checkError(file,objAccount,1,'',row,errors,error_list,'')    # check exist
     # # cost center
-    checkEmpty(objCost,row,errors,error_list)
-    checkError(objCost,1,'',row,errors,error_list,'') # check exist
+    checkEmpty(file,objCost,row,errors,error_list)
+    checkError(file,objCost,1,'',row,errors,error_list,'') # check exist
     # #currency
     # checkError(objCurrency,2,'string',row,errors,error_list,'') # check string type
-    checkEmpty(objCurrency,row,errors,error_list)
-    checkError(objCurrency,4,'MYR',row,errors,error_list,'') # check value MYR
+    checkEmpty(file,objCurrency,row,errors,error_list)
+    checkError(file,objCurrency,4,'MYR',row,errors,error_list,'') # check value MYR
     # # debit
     if amt_type == 'debit':
         f1 = {'field':'debit_in_account_currency','value':float(debit_credit)}
-        checkError(f1,2,'float',row,errors,error_list,'') # check float type
-        checkEmpty(f1,row,errors,error_list)
+        checkError(file,f1,2,'float',row,errors,error_list,'') # check float type
+        checkEmpty(file,f1,row,errors,error_list)
         # balance = checkError(f1,'','',row,errors,error_list,'') # get value
-        checkError(f1,'','',row,errors,error_list,balance) # get value
+        checkError(file,f1,'','',row,errors,error_list,balance) # get value
     # credit
     elif amt_type == 'credit':
         f1 = {'field':'credit_in_account_currency','value':abs(float(debit_credit))}
-        checkError(f1,2,'float',row,errors,error_list,'') # check float type
-        checkEmpty(f1,row,errors,error_list)
-        checkError(f1,'','',row,errors,error_list,balance)  # check balance
+        checkError(file,f1,2,'float',row,errors,error_list,'') # check float type
+        checkEmpty(file,f1,row,errors,error_list)
+        checkError(file,f1,'','',row,errors,error_list,balance)  # check balance
     # tax amount
-    checkEmpty(objTaxAmount,row,errors,error_list)
-    checkError(objTaxAmount,2,'number',row,errors,error_list,'') # check number type
+    checkEmpty(file,objTaxAmount,row,errors,error_list)
+    checkError(file,objTaxAmount,2,'number',row,errors,error_list,'') # check number type
     # tax code
     # second_cost_center_number
-    checkEmpty(objProfitOrCostCenterNumber,row,errors,error_list)
+    checkEmpty(file,objProfitOrCostCenterNumber,row,errors,error_list)
     # san_count
-    checkEmpty(objSanCount,row,errors,error_list)
-    checkError(objSanCount,2,'number',row,errors,error_list,'') # check number type
+    checkEmpty(file,objSanCount,row,errors,error_list)
+    checkError(file,objSanCount,2,'number',row,errors,error_list,'') # check number type
     # monthly charge
-    checkEmpty(objMonthlyCharge,row,errors,error_list)
-    checkError(objMonthlyCharge,2,'number',row,errors,error_list,'') # check number type
+    checkEmpty(file,objMonthlyCharge,row,errors,error_list)
+    checkError(file,objMonthlyCharge,2,'number',row,errors,error_list,'') # check number type
     # month count
-    checkEmpty(objMonthCount,row,errors,error_list)
-    checkError(objMonthCount,2,'number',row,errors,error_list,'') # check number type
+    checkEmpty(file,objMonthCount,row,errors,error_list)
+    checkError(file,objMonthCount,2,'number',row,errors,error_list,'') # check number type
     # current month
-    checkError(objCurrentMonth,7,'',row,errors,error_list,'')      
-    checkEmpty(objCurrentMonth,row,errors,error_list)
-    checkError(objCurrentMonth,2,'number',row,errors,error_list,'') # check number type
+    checkError(file,objCurrentMonth,7,'',row,errors,error_list,'')      
+    checkEmpty(file,objCurrentMonth,row,errors,error_list)
+    checkError(file,objCurrentMonth,2,'number',row,errors,error_list,'') # check number type
     # revenue account
     # checkEmpty(objRevenueAccount,row,errors,error_list)
     # checkError(objRevenueAccount,1,'',row,errors,error_list,'')    # check exist
     # # user remark
-    checkEmpty(objUserRemark,row,errors,error_list)
+    checkEmpty(file,objUserRemark,row,errors,error_list)
     # split = user_remark.split(' / ')
     # print('------------user remark: ',user_remark)
     # bank_account = split[0]
@@ -595,12 +599,13 @@ def getError(row_list,row,error_list,errors,balance):
 
     return balance  
 
-def checkError(f1,f2,f3,row,errors,error_list,balance):
+def checkError(file,f1,f2,f3,row,errors,error_list,balance):
     # f1(data), f2(error type), f3(number/string, length), f4(),balance
     # checkExist('Account','account_number',row_list['account_number'],row,error_list,errors)
     field = f1['field']
     val = f1['value']
     error = {
+        'filename':file,
         'row':row,
         'field':field,
         'val':val
@@ -881,7 +886,7 @@ def checkDominant(f1,errors,error_list):
 
                 error_list.append(error)
 
-def handleError(cr):
+def handleError(file,cr):
     # print('CR:')
     # print(cr)
     error_list = []
@@ -915,7 +920,7 @@ def handleError(cr):
             
         # if counter == 1:
         balance['counter'] = balance_counter
-        getError(row,row_count,error_list,errors,balance)
+        getError(file,row,row_count,error_list,errors,balance)
 
         if balance_counter == 1:
             try:
@@ -926,7 +931,7 @@ def handleError(cr):
 
         elif balance_counter == 2:
             # balance['counter'] = balance_counter
-            getError(row,row_count,error_list,errors,balance)
+            getError(file,row,row_count,error_list,errors,balance)
             balance_counter = 1
             
 
@@ -1499,3 +1504,4 @@ def handleError2(file,cr):
             print(p)
         return True,error_list
 
+        
