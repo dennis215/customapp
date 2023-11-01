@@ -171,56 +171,17 @@ from customapp.general_function import *
 #     prev_date = date(day=days[1],month=month,year=year)
 #     return prev_date
 
-def checkFile():
-    cr_dict_list=[]
-    cr_list=[]
-    data = {"name": "Pfile"}
-    headers = {
-        "Content-Type": "application/json",
-    }
-    # dev
-    # reqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    # Staging
-    reqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    response = requests.request("POST", reqUrl,headers=headers,json=data, verify=False)  
-    docs = frappe.get_list('Journal Entry', filters={'report_type':'Billing'})
-    if response.status_code == 200:
-        zip = response.content
-        zip_file = zipfile.ZipFile(io.BytesIO(zip))
-        file_list = zip_file.namelist()
-        if docs:
-            doc = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing'})
-            last_posting_date = doc.posting_date
-            month = last_posting_date.month
-            year = last_posting_date.year
-            new_posting_date = getNextDate(last_posting_date)
-            month = new_posting_date.month
-        else:
-            new_posting_date = date(year=2023,month=1,day=1)
-            month = new_posting_date.month
-        for file in file_list:
-            if file in file_list:
-                cr_dict,cr = getCr_pass_file(zip_file,file)
-                for row in cr_dict:
-                    cr_dict_list.append(row)
-                for row in cr:
-                    cr_list.append(row)
-                batch_id = getBatchID(file,month)
-                print('--------------filenamessss: ',file)
-
-        date_str = getDateString(new_posting_date)
+def checkFile(cr_dict,cr,batch_id,new_date):
+        date_str = getDateString(new_date)
         doc_name = 'Billing - '+date_str
         print('date string: ',date_str)
         print('batch id in checkfile: ',batch_id)
-        return_dict = {'doc_name':doc_name,'new_posting_date':new_posting_date,'cr_dict':cr_dict,'batch_id':batch_id}
+        return_dict = {'doc_name':doc_name,'new_posting_date':new_date,'cr_dict':cr_dict,'batch_id':batch_id}
         try:
-            return_dict['cr_list'] = cr_list
+            return_dict['cr_list'] = cr
         except:
             pass
         return return_dict
-    else:
-        print("Download failed with status code:", response.status_code)
-        return 0
 
 # def test():
 #     test = False
@@ -415,11 +376,327 @@ def doLogicRevenue(dje_list):
 #     print('batchid: ',batchid)
 #     return batchid
 
-def doImportBillingReport():
+def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
     global domain
     # domain = 'http://127.0.0.1:8000'
     # # domain = 'http://175.136.236.153:8003'
     domain = getDomain()
+    
+    # doUAT()
+    # scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing Report'})
+    # if scheduler.control == 'Stop':
+    #     print('-----------------Billing Report Scheduler: Stopped')
+    #     return
+    # else:
+    # # if True:
+    #     print('-----------------Billing Report Scheduler: Playing')
+
+    # ---------------------------------real one call api--------------------------
+
+
+    #----------------------------------for uat purpose----------------------------
+
+    
+    # global doc_name
+    # checkFile()
+    # return
+
+    # if isUnorganized == 1:
+    #     new_date = date(day=31,month=1,year=2023)
+    #     filename = '131_string(13) with rebate.csv'
+    #     batch_id = getBatchID(filename)
+    #     cr_dict,cr = getCr(filename)
+    #     print('isUnorganized')
+    # else:
+        # doc_name, new_date,cr,cr_dict, batch_id = checkFile()
+    # doc_name, new_date,cr,cr_dict, batch_id = checkFile()
+    return_dict = checkFile(cr_dict,cr,batch_id,new_date)
+    doc_name = return_dict['doc_name']
+    cr_dict = return_dict['cr_dict']
+    batch_id = return_dict['batch_id']
+    new_date = return_dict['new_posting_date']
+
+    print('---124---crdict:')
+    print(cr_dict)
+
+    # today = datetime.now().date()
+    exist, name = checkExist(batch_id,'Billing')
+    date_str = getDateString(new_date)
+    if exist:
+        print('Journal Entry of Billing for ',date_str,' is already create. You can see here '+name)
+        # raise Exception('Journal Entry of Billing for ',date_str,' is already create. You can see here '+name)
+    else:
+        print('------------------date is ',new_date)
+
+    # importfrombs(start_date, end_date)
+    error,error_log_name_list,error_link = importfrombs(file,cr_dict)
+    if error:
+        # for log in error_log_name_list:
+        #     doc.append('journal_entry_error_log',{
+        #         'journal_entry_error_log':log,
+        #     })
+        # print('-----error yes')
+        frappe.msgprint('There is error when trying to import the Collection Report. You can see the error here ' +error_link)
+    else:
+        print('no error')
+        # journal = createJE(cr_dict,new_date)
+        # je_name,journal_links = createJE(cr_dict,new_date,batch_id)
+        createJE(cr_dict,new_date,batch_id)
+        
+        # doc.append('journal_entry',{
+        #     'journal_entry':je_name,
+        # })
+
+        # ---------------------------logic for deferred revenue
+        # dje_list = []
+        # get last drje data,
+        
+        # deffered_list = frappe.get_list('Deferred Revenue Journal Entry')
+        # if deffered_list:
+        #     prev_date = getPreviousDate(new_date)
+        #     print('previous_date: ',prev_date)
+        #     deferred = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'tag_id':prev_date})
+        #     last_dje = deferred.accounts
+        
+        # for row in last_dje:
+        #     journal.append('deferred_accounts')
+        #     last_dict = convertToDict(last_dje)
+        # # put into list A
+        #     for row in last_dict:
+        #         # if row['month_count'] > 0:
+        #         if row['month_count'] > 0:
+        #             dje_list.append(row)
+
+        # do logic for revenue
+        # if len(dje_list):
+        #     new_list = doLogicRevenue(dje_list)
+        #     for row in new_list:
+        #         journal.append('deferred_accounts',row)
+        #         print('dididid')
+        
+        # new_date = datetime.strptime(tag_id_str,'%Y-%m-%d').date()
+        # journal.posting_date = new_date
+        # try:
+        #     doc_name = 'Billing - '+new_date.strftime('%Y-%m-%d')
+        #     journal.title = doc_name
+        #     journal.save()
+        #     journal.submit()
+        #     frappe.db.commit()
+        #     je_name = journal.name
+            
+        #     # domains = domain + '/app/journal-entry/'+ je_name
+        #     # journal_link = "<a href='"+domains+"' target='_blank'>Billing - "+date_str+"</a>"
+        #     # # frappe.msgprint('One Journal Entry has been created, See Here ')
+        #     # msg = 'A journal entry has been made for Billing Report '+str(new_date)+'. Please see here '+journal_link
+        #     # title = 'ERPNext: Journal Entry '+date_str
+        #     # sendEmail(msg,title,journal.doctype,journal.name)
+        #     # print('journal_link: ',journal_link)
+        #     # frappe.msgprint('Journal Entries has been created, See Here '+journal_link)
+        # except Exception as e:
+        #     print('error: ',e)
+        
+        
+
+
+        
+        # # get current drje data
+        # cur_list = []
+        # counter = 1
+        # for row in cr:
+        #     if counter == 1:
+        #         counter += 1
+        #         rows_dict = {}
+        #         try:
+        #             revenue_account = row[39]
+        #             # if revenue_account != '0' or revenue_account != '':
+        #             revenue_account = int(revenue_account)
+        #             print('revenue_account: ',revenue_account)
+        #             #     rows_dict['revenue_account'] = revenue_account
+        #             # else:
+        #                 # continue
+        #         except:
+        #             continue
+                
+        #         year = row[1]
+        #         account_number = row[2]
+        #         cost_center_number = row[3]
+        #         currency = row[12]
+        #         debit = row[15]
+        #         remark = row[23]
+        #         posting_date = row[30]
+        #         group = row[31]
+        #         tax_amount = row[32]
+        #         tax_code = row[33]
+        #         second_cost_center_number = row[34]
+        #         san_count = row[35]
+        #         monthly_charge = row[36]
+        #         month_count = row[37]
+        #         current_month = row[38]
+        #         rows_dicts = {
+        #             # 'account':account_number,
+        #             'account_number':account_number,
+        #             # 'cost_center':cost_center.name,
+        #             'cost_center_number':cost_center_number,
+        #             # 'cost_center':cost_center.name,
+        #             'currency':currency,
+        #             'debit_in_account_currency' : float(debit),
+        #             'credit_in_account_currency' : float(0),
+        #             'remark':remark,
+        #             'group':group,
+        #             'year': year,
+        #             'posting_date':posting_date,
+        #             'tax_amount':tax_amount,
+        #             'tax_code':tax_code,
+        #             'second_cost_center_number':second_cost_center_number,
+        #             'san_count':san_count,
+        #             'monthly_charge':monthly_charge,
+        #             'month_count':month_count,
+        #             'current_month':current_month,
+        #             'revenue_account':revenue_account
+        #         }
+        #         # rows_dict.update(rows_dicts)
+        #         cur_list.append(rows_dicts)
+                
+        #     elif counter == 2:
+        #         counter = 1
+        #         rows_dict = {}
+        #         try:
+        #             revenue_account = row[39]
+        #             # if revenue_account != '0' or revenue_account != '':
+        #             revenue_account = int(revenue_account)
+        #             # rows_dict['revenue_account'] = revenue_account
+        #             # else:
+        #             #     continue
+        #         except:
+        #             continue
+                
+        #         year = row[1]
+        #         account_number = row[2]
+        #         cost_center_number = row[3]
+        #         currency = row[12]
+        #         credit = row[15]
+        #         remark = row[23]
+        #         posting_date = row[30]
+        #         group = row[31]
+        #         tax_amount = row[32]
+        #         tax_code = row[33]
+        #         second_cost_center_number = row[34]
+        #         san_count = row[35]
+        #         monthly_charge = row[36]
+        #         month_count = row[37]
+        #         current_month = row[38]
+        #         rows_dicts = {
+        #             # 'account':account_number,
+        #             'account_number':account_number,
+        #             # 'cost_center':cost_center.name,
+        #             'cost_center_number':cost_center_number,
+        #             # 'cost_center':cost_center.name,
+        #             'currency':currency,
+        #             'debit_in_account_currency' : float(0),
+        #             'credit_in_account_currency' : abs(float(credit)),
+        #             'remark':remark,
+        #             'group':group,
+        #             'year': year,
+        #             'posting_date':posting_date,
+        #             'tax_amount':tax_amount,
+        #             'tax_code':tax_code,
+        #             'second_cost_center_number':second_cost_center_number,
+        #             'san_count':san_count,
+        #             'monthly_charge':monthly_charge,
+        #             'month_count':month_count,
+        #             'current_month':current_month,
+        #             'revenue_account':revenue_account
+        #         }
+        #         # rows_dict.update(rows_dicts)
+        #         cur_list.append(rows_dicts)
+
+        # # append to list A
+        # for row in cur_list:
+        #     dje_list.append(row)       
+
+        # print('djelist: ',dje_list)
+        # # minus and calculate dr, put into list B
+        # updatelist = doLogicDeferred(dje_list)
+        # print('update list-------------------')
+        # print(updatelist)
+        
+        # # create new drje
+        # drje = frappe.new_doc('Deferred Revenue Journal Entry')
+        # print('-----update listtt')
+        # print(updatelist)
+
+        # # put list B into it
+        # for row in updatelist:
+        #     drje.append('accounts',row)
+        
+        # print('drje--------------------------: ',tag_id_str)
+        # drje.posting_date = tag_id_str
+        # drje.tag_id = tag_id_str
+        # drje.doc_name = tag_id_str
+        # drje.save()
+        # drje.submit()
+        # drje_name =drje.name
+
+        # domains = domain + '/app/deferred-revenue-journal-entry/'+ drje_name
+        # error_link = "<a href='"+domains+"' target='_blank'>Deferred Revenue Journal Entry "+tag_id_str+"</a>"
+        # msg = 'A deferred revenue journal entry has been made for Billing Report '+tag_id_str+'. Please see here '+error_link
+        # title = 'ERPNext: Deferred Revenue Journal Entry '+tag_id_str
+        # sendEmail(msg,title,drje.doctype,drje.name)
+
+
+
+
+
+        # get last drje data, put into list A
+        # get current drje data, append to list A
+        # minus and calculate dr, put into list B
+        # create new drje, put list B into it
+        # create 2 new rows based on list B, put into current je
+
+
+        # ---------------------------end of logic
+        
+
+        # doc.save()
+        # doc.submit()
+
+def doImportBillingReport():
+    errors=[]
+    getFileData = {"name": "Pfile"}
+    headers = {
+        "Content-Type": "application/json",
+    }
+    # dev
+    # getFileReqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    # returnReqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD//ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
+    # Staging
+    getFileReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    returnReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
+    response = requests.request("POST", getFileReqUrl,headers=headers,json=getFileData, verify=False)  
+    if response.status_code == 200:
+        zip = response.content
+        zip_file = zipfile.ZipFile(io.BytesIO(zip))
+        file_list = zip_file.namelist()
+        for file in file_list:
+            if file in file_list:
+                cr_dict,cr = getCr_pass_file(zip_file,file)
+                split = file.split('_')
+                fileDate = split[2].split('.')[0]
+                dateSplit = fileDate.split('-')
+                year=dateSplit[0]
+                month=dateSplit[1]
+                day=dateSplit[2]
+                new_date = date(year=int(year),month=int(month),day=int(day))
+                batch_id = getBatchID(file,day)
+                print('--------------filenamessss: ',file)
+                error_list = doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date)
+                errors.append(error_list)
+    flattened_data = [item for sublist in errors for item in sublist]
+    returnData =  {"name": "Billing", "errorFileSummary":flattened_data}
+    print('errors: ',returnData)
+    response = requests.request("POST", returnReqUrl,headers=headers,json=getFileData, verify=False)  
+    if response.status_code == 200:
+        print("Request was successful (Status Code 200).")
     
     # doUAT()
     # scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing Report'})
@@ -698,7 +975,7 @@ def doImportBillingReport():
 
         # doc.save()
         # doc.submit()
-     
+        
 # def checkExist(tag_id):
 #     try:
 #         print('tag_id: ',tag_id)
@@ -1974,7 +2251,7 @@ def createErrorLog(much,error_list,errordate):
         return error_link,errorlog.name
 
 # def importfrombs(start_date, end_date,cr):
-def importfrombs(cr_dict):
+def importfrombs(file,cr_dict):
     # ready,cr = checkReadyCR(start_date,end_date)
     # if ready:
     #     # print('CR: ',cr)
@@ -1997,7 +2274,7 @@ def importfrombs(cr_dict):
     print('cr-dict: -------------------')
     print(cr_dict)
 
-    error_result, error_list = handleError(cr_dict)
+    error_result, error_list = handleError(file,cr_dict)
     print('ERROR RESULT: ',error_result)
     print('ERROR LIST: ', error_list)
     print('LENGTH CR: ',len(cr_dict))
