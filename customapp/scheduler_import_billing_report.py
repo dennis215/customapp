@@ -680,9 +680,9 @@ def doImportBillingReport():
         for file in file_list:
             if file in file_list:
                 cr_dict,cr = getCr_pass_file(zip_file,file)
-                split = file.split('_')
-                fileDate = split[2].split('.')[0]
+                fileDate = file[-14:-4]
                 dateSplit = fileDate.split('-')
+                print("dateSplit  ",dateSplit)
                 year=dateSplit[0]
                 month=dateSplit[1]
                 day=dateSplit[2]
@@ -713,10 +713,6 @@ def doImportBillingReport():
     #----------------------------------for uat purpose----------------------------
 
     
-    # global doc_name
-    # checkFile()
-    # return
-
     # if isUnorganized == 1:
     #     new_date = date(day=31,month=1,year=2023)
     #     filename = '131_string(13) with rebate.csv'
@@ -726,255 +722,10 @@ def doImportBillingReport():
     # else:
         # doc_name, new_date,cr,cr_dict, batch_id = checkFile()
     # doc_name, new_date,cr,cr_dict, batch_id = checkFile()
-    return_dict = checkFile()
-    doc_name = return_dict['doc_name']
-    cr_dict = return_dict['cr_dict']
-    batch_id = return_dict['batch_id']
-    new_date = return_dict['new_posting_date']
-
-    print('---124---crdict:')
-    print(cr_dict)
-
     # today = datetime.now().date()
-    exist, name = checkExist(batch_id,'Billing')
-    date_str = getDateString(new_date)
-    if exist:
-        print('Journal Entry of Billing for ',date_str,' is already create. You can see here '+name)
-        raise Exception('Journal Entry of Billing for ',date_str,' is already create. You can see here '+name)
-    else:
-        print('------------------date is ',new_date)
-
-    # importfrombs(start_date, end_date)
-    error,error_log_name_list,error_link = importfrombs(cr_dict)
-    if error:
-        # for log in error_log_name_list:
-        #     doc.append('journal_entry_error_log',{
-        #         'journal_entry_error_log':log,
-        #     })
-        # print('-----error yes')
-        frappe.msgprint('There is error when trying to import the Collection Report. You can see the error here ' +error_link)
-    else:
-        print('no error')
-        # journal = createJE(cr_dict,new_date)
-        # je_name,journal_links = createJE(cr_dict,new_date,batch_id)
-        createJE(cr_dict,new_date,batch_id)
-        
         # doc.append('journal_entry',{
         #     'journal_entry':je_name,
         # })
-
-        # ---------------------------logic for deferred revenue
-        # dje_list = []
-        # get last drje data,
-        
-        # deffered_list = frappe.get_list('Deferred Revenue Journal Entry')
-        # if deffered_list:
-        #     prev_date = getPreviousDate(new_date)
-        #     print('previous_date: ',prev_date)
-        #     deferred = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'tag_id':prev_date})
-        #     last_dje = deferred.accounts
-        
-        # for row in last_dje:
-        #     journal.append('deferred_accounts')
-        #     last_dict = convertToDict(last_dje)
-        # # put into list A
-        #     for row in last_dict:
-        #         # if row['month_count'] > 0:
-        #         if row['month_count'] > 0:
-        #             dje_list.append(row)
-
-        # do logic for revenue
-        # if len(dje_list):
-        #     new_list = doLogicRevenue(dje_list)
-        #     for row in new_list:
-        #         journal.append('deferred_accounts',row)
-        #         print('dididid')
-        
-        # new_date = datetime.strptime(tag_id_str,'%Y-%m-%d').date()
-        # journal.posting_date = new_date
-        # try:
-        #     doc_name = 'Billing - '+new_date.strftime('%Y-%m-%d')
-        #     journal.title = doc_name
-        #     journal.save()
-        #     journal.submit()
-        #     frappe.db.commit()
-        #     je_name = journal.name
-            
-        #     # domains = domain + '/app/journal-entry/'+ je_name
-        #     # journal_link = "<a href='"+domains+"' target='_blank'>Billing - "+date_str+"</a>"
-        #     # # frappe.msgprint('One Journal Entry has been created, See Here ')
-        #     # msg = 'A journal entry has been made for Billing Report '+str(new_date)+'. Please see here '+journal_link
-        #     # title = 'ERPNext: Journal Entry '+date_str
-        #     # sendEmail(msg,title,journal.doctype,journal.name)
-        #     # print('journal_link: ',journal_link)
-        #     # frappe.msgprint('Journal Entries has been created, See Here '+journal_link)
-        # except Exception as e:
-        #     print('error: ',e)
-        
-        
-
-
-        
-        # # get current drje data
-        # cur_list = []
-        # counter = 1
-        # for row in cr:
-        #     if counter == 1:
-        #         counter += 1
-        #         rows_dict = {}
-        #         try:
-        #             revenue_account = row[39]
-        #             # if revenue_account != '0' or revenue_account != '':
-        #             revenue_account = int(revenue_account)
-        #             print('revenue_account: ',revenue_account)
-        #             #     rows_dict['revenue_account'] = revenue_account
-        #             # else:
-        #                 # continue
-        #         except:
-        #             continue
-                
-        #         year = row[1]
-        #         account_number = row[2]
-        #         cost_center_number = row[3]
-        #         currency = row[12]
-        #         debit = row[15]
-        #         remark = row[23]
-        #         posting_date = row[30]
-        #         group = row[31]
-        #         tax_amount = row[32]
-        #         tax_code = row[33]
-        #         second_cost_center_number = row[34]
-        #         san_count = row[35]
-        #         monthly_charge = row[36]
-        #         month_count = row[37]
-        #         current_month = row[38]
-        #         rows_dicts = {
-        #             # 'account':account_number,
-        #             'account_number':account_number,
-        #             # 'cost_center':cost_center.name,
-        #             'cost_center_number':cost_center_number,
-        #             # 'cost_center':cost_center.name,
-        #             'currency':currency,
-        #             'debit_in_account_currency' : float(debit),
-        #             'credit_in_account_currency' : float(0),
-        #             'remark':remark,
-        #             'group':group,
-        #             'year': year,
-        #             'posting_date':posting_date,
-        #             'tax_amount':tax_amount,
-        #             'tax_code':tax_code,
-        #             'second_cost_center_number':second_cost_center_number,
-        #             'san_count':san_count,
-        #             'monthly_charge':monthly_charge,
-        #             'month_count':month_count,
-        #             'current_month':current_month,
-        #             'revenue_account':revenue_account
-        #         }
-        #         # rows_dict.update(rows_dicts)
-        #         cur_list.append(rows_dicts)
-                
-        #     elif counter == 2:
-        #         counter = 1
-        #         rows_dict = {}
-        #         try:
-        #             revenue_account = row[39]
-        #             # if revenue_account != '0' or revenue_account != '':
-        #             revenue_account = int(revenue_account)
-        #             # rows_dict['revenue_account'] = revenue_account
-        #             # else:
-        #             #     continue
-        #         except:
-        #             continue
-                
-        #         year = row[1]
-        #         account_number = row[2]
-        #         cost_center_number = row[3]
-        #         currency = row[12]
-        #         credit = row[15]
-        #         remark = row[23]
-        #         posting_date = row[30]
-        #         group = row[31]
-        #         tax_amount = row[32]
-        #         tax_code = row[33]
-        #         second_cost_center_number = row[34]
-        #         san_count = row[35]
-        #         monthly_charge = row[36]
-        #         month_count = row[37]
-        #         current_month = row[38]
-        #         rows_dicts = {
-        #             # 'account':account_number,
-        #             'account_number':account_number,
-        #             # 'cost_center':cost_center.name,
-        #             'cost_center_number':cost_center_number,
-        #             # 'cost_center':cost_center.name,
-        #             'currency':currency,
-        #             'debit_in_account_currency' : float(0),
-        #             'credit_in_account_currency' : abs(float(credit)),
-        #             'remark':remark,
-        #             'group':group,
-        #             'year': year,
-        #             'posting_date':posting_date,
-        #             'tax_amount':tax_amount,
-        #             'tax_code':tax_code,
-        #             'second_cost_center_number':second_cost_center_number,
-        #             'san_count':san_count,
-        #             'monthly_charge':monthly_charge,
-        #             'month_count':month_count,
-        #             'current_month':current_month,
-        #             'revenue_account':revenue_account
-        #         }
-        #         # rows_dict.update(rows_dicts)
-        #         cur_list.append(rows_dicts)
-
-        # # append to list A
-        # for row in cur_list:
-        #     dje_list.append(row)       
-
-        # print('djelist: ',dje_list)
-        # # minus and calculate dr, put into list B
-        # updatelist = doLogicDeferred(dje_list)
-        # print('update list-------------------')
-        # print(updatelist)
-        
-        # # create new drje
-        # drje = frappe.new_doc('Deferred Revenue Journal Entry')
-        # print('-----update listtt')
-        # print(updatelist)
-
-        # # put list B into it
-        # for row in updatelist:
-        #     drje.append('accounts',row)
-        
-        # print('drje--------------------------: ',tag_id_str)
-        # drje.posting_date = tag_id_str
-        # drje.tag_id = tag_id_str
-        # drje.doc_name = tag_id_str
-        # drje.save()
-        # drje.submit()
-        # drje_name =drje.name
-
-        # domains = domain + '/app/deferred-revenue-journal-entry/'+ drje_name
-        # error_link = "<a href='"+domains+"' target='_blank'>Deferred Revenue Journal Entry "+tag_id_str+"</a>"
-        # msg = 'A deferred revenue journal entry has been made for Billing Report '+tag_id_str+'. Please see here '+error_link
-        # title = 'ERPNext: Deferred Revenue Journal Entry '+tag_id_str
-        # sendEmail(msg,title,drje.doctype,drje.name)
-
-
-
-
-
-        # get last drje data, put into list A
-        # get current drje data, append to list A
-        # minus and calculate dr, put into list B
-        # create new drje, put list B into it
-        # create 2 new rows based on list B, put into current je
-
-
-        # ---------------------------end of logic
-        
-
-        # doc.save()
-        # doc.submit()
         
 # def checkExist(tag_id):
 #     try:

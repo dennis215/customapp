@@ -560,29 +560,31 @@ def getError(file,row_list,row,error_list,errors,balance):
         checkError(file,f1,2,'float',row,errors,error_list,'') # check float type
         checkEmpty(file,f1,row,errors,error_list)
         checkError(file,f1,'','',row,errors,error_list,balance)  # check balance
-    # tax amount
-    checkEmpty(file,objTaxAmount,row,errors,error_list)
-    checkError(file,objTaxAmount,2,'number',row,errors,error_list,'') # check number type
-    # tax code
-    # second_cost_center_number
-    checkEmpty(file,objProfitOrCostCenterNumber,row,errors,error_list)
-    # san_count
-    checkEmpty(file,objSanCount,row,errors,error_list)
-    checkError(file,objSanCount,2,'number',row,errors,error_list,'') # check number type
-    # monthly charge
-    checkEmpty(file,objMonthlyCharge,row,errors,error_list)
-    checkError(file,objMonthlyCharge,2,'number',row,errors,error_list,'') # check number type
-    # month count
-    checkEmpty(file,objMonthCount,row,errors,error_list)
-    checkError(file,objMonthCount,2,'number',row,errors,error_list,'') # check number type
-    # current month
-    checkError(file,objCurrentMonth,7,'',row,errors,error_list,'')      
-    checkEmpty(file,objCurrentMonth,row,errors,error_list)
-    checkError(file,objCurrentMonth,2,'number',row,errors,error_list,'') # check number type
+
+    # # tax amount
+    # checkEmpty(file,objTaxAmount,row,errors,error_list)
+    # checkError(file,objTaxAmount,2,'number',row,errors,error_list,'') # check number type
+    # # tax code
+    # # second_cost_center_number
+    # checkEmpty(file,objProfitOrCostCenterNumber,row,errors,error_list)
+    # # san_count
+    # checkEmpty(file,objSanCount,row,errors,error_list)
+    # checkError(file,objSanCount,2,'number',row,errors,error_list,'') # check number type
+    # # monthly charge
+    # checkEmpty(file,objMonthlyCharge,row,errors,error_list)
+    # checkError(file,objMonthlyCharge,2,'number',row,errors,error_list,'') # check number type
+    # # month count
+    # checkEmpty(file,objMonthCount,row,errors,error_list)
+    # checkError(file,objMonthCount,2,'number',row,errors,error_list,'') # check number type
+    # # current month
+    # checkError(file,objCurrentMonth,7,'',row,errors,error_list,'')      
+    # checkEmpty(file,objCurrentMonth,row,errors,error_list)
+    # checkError(file,objCurrentMonth,2,'number',row,errors,error_list,'') # check number type
     # revenue account
     # checkEmpty(objRevenueAccount,row,errors,error_list)
     # checkError(objRevenueAccount,1,'',row,errors,error_list,'')    # check exist
     # # user remark
+    
     checkEmpty(file,objUserRemark,row,errors,error_list)
     # split = user_remark.split(' / ')
     # print('------------user remark: ',user_remark)
@@ -1504,4 +1506,3 @@ def handleError2(file,cr):
             print(p)
         return True,error_list
 
-        
