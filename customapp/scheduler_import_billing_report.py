@@ -429,7 +429,7 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
         print('------------------date is ',new_date)
 
     # importfrombs(start_date, end_date)
-    error,error_log_name_list,error_link = importfrombs(file,cr_dict)
+    error,error_log_name_list,error_link,error_list = importfrombs(file,cr_dict)
     if error:
         # for log in error_log_name_list:
         #     doc.append('journal_entry_error_log',{
@@ -442,6 +442,9 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
         # journal = createJE(cr_dict,new_date)
         # je_name,journal_links = createJE(cr_dict,new_date,batch_id)
         createJE(cr_dict,new_date,batch_id)
+
+    print('DONE SCHEDULER')
+    return error_list
         
         # doc.append('journal_entry',{
         #     'journal_entry':je_name,
@@ -691,7 +694,7 @@ def doImportBillingReport():
                 print('--------------filenamessss: ',file)
                 error_list = doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date)
                 errors.append(error_list)
-    if errors==[]:
+    if errors !=[]:
         flattened_data = [item for sublist in errors for item in sublist]
         returnData =  {"name": "Billing", "errorFileSummary":flattened_data}
     else:
@@ -2036,8 +2039,8 @@ def importfrombs(file,cr_dict):
         error_link,error_name = createErrorLog(False,error_list,cr_date)
         error_log_name_list.append(error_name)
         # frappe.msgprint('There is error when trying to import the Collection Report. You can see the error here ' +error_link)
-        return error_result,error_log_name_list,error_link
-    return error_result,'',''
+        return error_result,error_log_name_list,error_link,error_list
+    return error_result,'','',error_list
 
     # journal_links = ''
     # # for cr in cr:
