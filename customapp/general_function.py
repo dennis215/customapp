@@ -487,12 +487,12 @@ def getError(file,row_list,row,error_list,errors,balance):
     account_number = row_list['account_number']
     cost_center_number = row_list['cost_center_number']
     currency = row_list['currency']
-    tax_amount = row_list['tax_amount']
-    profit_or_cost_center_number = row_list['profit_or_cost_center_number']
-    san_count = row_list['san_count']
-    monthly_charge = row_list['monthly_charge']
-    month_count = row_list['month_count']
-    current_month = row_list['current_month']
+    # tax_amount = row_list['tax_amount']
+    # profit_or_cost_center_number = row_list['profit_or_cost_center_number']
+    # san_count = row_list['san_count']
+    # monthly_charge = row_list['monthly_charge']
+    # month_count = row_list['month_count']
+    # current_month = row_list['current_month']
     # print('debit credit type: ',type(row_list['debit']))
     # print('debit credit: ',row_list['debit'])
     # print('year: ',year)
@@ -515,12 +515,12 @@ def getError(file,row_list,row,error_list,errors,balance):
     objCurrency = {'field':'currency','value':currency}
     objPostingDate = {'field':'posting_date', 'value':posting_date}
     objGroup = {'field':'group','value':group}
-    objTaxAmount = {'field':'tax_amount', 'value':tax_amount}
-    objProfitOrCostCenterNumber = {'field':'profit_or_cost_center_number','value':profit_or_cost_center_number}
-    objSanCount = {'field':'san_count','value':san_count}
-    objMonthlyCharge = {'field':'monthly_charge','value':monthly_charge}
-    objMonthCount = {'field':'month_count','value':month_count}
-    objCurrentMonth = {'field':'current_month','value':current_month}
+    # objTaxAmount = {'field':'tax_amount', 'value':tax_amount}
+    # objProfitOrCostCenterNumber = {'field':'profit_or_cost_center_number','value':profit_or_cost_center_number}
+    # objSanCount = {'field':'san_count','value':san_count}
+    # objMonthlyCharge = {'field':'monthly_charge','value':monthly_charge}
+    # objMonthCount = {'field':'month_count','value':month_count}
+    # objCurrentMonth = {'field':'current_month','value':current_month}
     try:
         revenue_account = row_list['revenue_account']
         objRevenueAccount = {'field':'revenue_account','value':revenue_account}
