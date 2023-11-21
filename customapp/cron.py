@@ -1881,7 +1881,7 @@ def doImportCollectionReport():
     else:
         returnData =  {"name": "Collection", "errorFileSummary":[]}
     print('errors: ',returnData)
-    response = requests.request("POST", returnReqUrl,headers=headers,json=getFileData, verify=False)  
+    response = requests.request("POST", returnReqUrl,headers=headers,json=returnData, verify=False)  
     if response.status_code == 200:
         print("Request was successful (Status Code 200).")
     
