@@ -691,10 +691,13 @@ def doImportBillingReport():
                 print('--------------filenamessss: ',file)
                 error_list = doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date)
                 errors.append(error_list)
-    flattened_data = [item for sublist in errors for item in sublist]
-    returnData =  {"name": "Billing", "errorFileSummary":flattened_data}
+    if errors==[]:
+        flattened_data = [item for sublist in errors for item in sublist]
+        returnData =  {"name": "Billing", "errorFileSummary":flattened_data}
+    else:
+        returnData =  {"name": "Billing", "errorFileSummary":[]}
     print('errors: ',returnData)
-    response = requests.request("POST", returnReqUrl,headers=headers,json=getFileData, verify=False)  
+    response = requests.request("POST", returnReqUrl,headers=headers,json=getFileData, verify=False)
     if response.status_code == 200:
         print("Request was successful (Status Code 200).")
     
