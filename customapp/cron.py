@@ -1875,8 +1875,11 @@ def doImportCollectionReport():
                 print('--------------filenamessss: ',file)
                 error_list = doImportCollectionReportSingle(file,cr_dict,cr,batch_id,new_date)
                 errors.append(error_list)
-    flattened_data = [item for sublist in errors for item in sublist]
-    returnData =  {"name": "Collection", "errorFileSummary":flattened_data}
+    if errors==[]:
+        flattened_data = [item for sublist in errors for item in sublist]
+        returnData =  {"name": "Collection", "errorFileSummary":flattened_data}
+    else:
+        returnData =  {"name": "Collection", "errorFileSummary":[]}
     print('errors: ',returnData)
     response = requests.request("POST", returnReqUrl,headers=headers,json=getFileData, verify=False)  
     if response.status_code == 200:
