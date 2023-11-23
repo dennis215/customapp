@@ -696,9 +696,9 @@ def doImportBillingReport():
                 errors.append(error_list)
     if errors !=[]:
         flattened_data = [item for sublist in errors for item in sublist]
-        returnData =  {"name": "Billing", "errorFileSummary":flattened_data}
+        returnData =  {"name": "Pfile", "errorFileSummary":flattened_data}
     else:
-        returnData =  {"name": "Billing", "errorFileSummary":[]}
+        returnData =  {"name": "Pfile", "errorFileSummary":[]}
     print('errors: ',returnData)
     response = requests.request("POST", returnReqUrl,headers=headers,json=returnData, verify=False)
     if response.status_code == 200:
@@ -1957,7 +1957,7 @@ def checkDominant(f1,errors,error_list):
 #     }
 #     frappe.enqueue(method=frappe.sendmail, queue='short',timeout='300',**email_args)
 
-def createErrorLog(much,error_list,errordate):
+def createErrorLog(file,much,error_list,errordate):
     errordate = errordate[:10]
     errordate = datetime.strptime(errordate,'%Y-%m-%d')
     errordate = errordate.date()
@@ -1968,6 +1968,7 @@ def createErrorLog(much,error_list,errordate):
     errordate_str = errordate.strftime('%Y-%m-%d')
     for e in error_list:
         errorlog.append('error_list',{
+            'file':file,
             'row':e['row'],
             'field':e['field'],
             'value':e['val'],
@@ -2036,7 +2037,7 @@ def importfrombs(file,cr_dict):
     print('ERROR LIST: ', error_list)
     print('LENGTH CR: ',len(cr_dict))
     if error_result == True:
-        error_link,error_name = createErrorLog(False,error_list,cr_date)
+        error_link,error_name = createErrorLog(file,False,error_list,cr_date)
         error_log_name_list.append(error_name)
         # frappe.msgprint('There is error when trying to import the Collection Report. You can see the error here ' +error_link)
         return error_result,error_log_name_list,error_link,error_list

@@ -1055,7 +1055,7 @@ def createCSV(cr,errordate):
         # file_url = upload(filename,file.read(),)
     return pathtofile, filename, filedata,cr
 
-def createErrorLog(much,error_list,errordate):
+def createErrorLog(file,much,error_list,errordate):
     errordate = errordate[:10]
     errordate = datetime.strptime(errordate,'%Y-%m-%d')
     errordate = errordate.date()
@@ -1066,6 +1066,7 @@ def createErrorLog(much,error_list,errordate):
     errordate_str = errordate.strftime('%Y-%m-%d')
     for e in error_list:
         errorlog.append('error_list',{
+            'file':file,
             'row':e['row'],
             'field':e['field'],
             'value':e['value'],
@@ -1531,7 +1532,7 @@ def doImportCollectionReportSingle(file,cr_dict,cr,batch_id,new_date):
     date_str = getDateString(new_date)
     if exist:
         print('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
-        raise Exception('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
+        # raise Exception('Journal Entry of Collection for ',date_str,' is already create. You can see here '+name)
     else:
         print('------------------date is ',new_date)
 
@@ -1654,7 +1655,7 @@ def importfrombs(file,cr_dict):
     print('ERROR LIST: ', error_list)
     print('LENGTH CR: ',len(cr_dict))
     if error_result == True:
-        error_link,error_name = createErrorLog(False,error_list,cr_date)
+        error_link,error_name = createErrorLog(file,False,error_list,cr_date)
         error_log_name_list.append(error_name)
         # frappe.msgprint('There is error when trying to import the Collection Report. You can see the error here ' +error_link)
         return error_result,error_log_name_list,error_link,error_list
