@@ -6,7 +6,7 @@ from frappe.utils import cstr
 from ftplib import FTP
 import io
 
-def getRow(accounts,row_list,tag_id):
+def getRow(accounts,row_list,tag_id,isCollection):
     current_datetime=getDateTimeString()
     tag = True
     counter = 1
@@ -20,16 +20,34 @@ def getRow(accounts,row_list,tag_id):
             counter=1
         print('account: ',a.name)
         if counter == 1:
-            row = {
-                'year':a.year,
-                'account_number':a.account_number,
-                'cost_center_number':a.cost_center_number,
-                'currency':a.currency,
-                'debit':a.debit_in_account_currency,
-                'remark':remarks,
-                'group':a.group,
-                'posting_date':a.posting_date,
-            }
+            if isCollection:
+                row = {
+                    'year':a.year,
+                    'account_number':a.account_number,
+                    'cost_center_number':a.cost_center_number,
+                    'currency':a.currency,
+                    'debit':a.debit_in_account_currency,
+                    'remark':remarks,
+                    'group':a.group,
+                    'posting_date':a.posting_date,
+                }
+            else:
+                row = {
+                    'year':a.year,
+                    'account_number':a.account_number,
+                    'cost_center_number':a.cost_center_number,
+                    'currency':a.currency,
+                    'debit':a.debit_in_account_currency,
+                    'remark':remarks,
+                    'group':a.group,
+                    'posting_date':a.posting_date,
+                    'tax_amount':a.tax_amount,
+                    'profit_or_cost_center_number':a.profit_or_cost_center_number,
+                    'san_count':a.san_count,
+                    'monthly_charge':a.monthly_charge,
+                    'month_count':a.month_count,
+                    'current_month':a.current_month,
+                }
             if tag:
                 row['tag_id'] = tag_id
             print('----------debit-----------------')
@@ -38,16 +56,34 @@ def getRow(accounts,row_list,tag_id):
             row_list.append(row)
         
         elif counter == 2:
-            row = {
-                'year':a.year,
-                'account_number':a.account_number,
-                'cost_center_number':a.cost_center_number,
-                'currency':a.currency,
-                'credit':a.credit_in_account_currency,
-                'remark':remarks,
-                'group':a.group,
-                'posting_date':a.posting_date
-            }
+            if isCollection:
+                row = {
+                    'year':a.year,
+                    'account_number':a.account_number,
+                    'cost_center_number':a.cost_center_number,
+                    'currency':a.currency,
+                    'credit':a.credit_in_account_currency,
+                    'remark':remarks,
+                    'group':a.group,
+                    'posting_date':a.posting_date,
+                }
+            else:
+                row = {
+                    'year':a.year,
+                    'account_number':a.account_number,
+                    'cost_center_number':a.cost_center_number,
+                    'currency':a.currency,
+                    'credit':a.credit_in_account_currency,
+                    'remark':remarks,
+                    'group':a.group,
+                    'posting_date':a.posting_date,
+                    'tax_amount':a.tax_amount,
+                    'profit_or_cost_center_number':a.profit_or_cost_center_number,
+                    'san_count':a.san_count,
+                    'monthly_charge':a.monthly_charge,
+                    'month_count':a.month_count,
+                    'current_month':a.current_month,
+                }
             if tag:
                 row['tag_id'] = tag_id
             # print('row 2: ',row)
@@ -113,10 +149,10 @@ def getVal(row,counter):
 def getValDeferred(row,isDebit):
     try:
         if isDebit:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),row['tax_code'],row['profit_or_cost_center_number'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'],row['san_count'],row['monthly_charge'],row['month_count'],row['current_month'])
             # print('val 1: ',val)
         else:
-            val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),row['tax_code'],row['profit_or_cost_center_number'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'],row['san_count'],row['monthly_charge'],row['month_count'],row['current_month'])
         return val
     except Exception as e:
         print('errors: ',e)
@@ -151,7 +187,7 @@ def exportCR():
             accounts = journal.accounts
             # print('accounts: ',accounts)
             row_list = []
-            getRow(accounts,row_list,tag_id)
+            getRow(accounts,row_list,tag_id,1)
 
             writer = UnicodeWriter()
             counter = 1
@@ -178,7 +214,7 @@ def exportCR():
             accounts = journal.accounts
             tag_id = journal.tag_id
             # print('accounts: ',accounts)
-            getRow(accounts,row_list,tag_id)
+            getRow(accounts,row_list,tag_id,1)
 
             # rest of the date
             for i in range(days):
@@ -187,7 +223,7 @@ def exportCR():
                 tag_id = journal.tag_id
                 accounts = journal.accounts
                 # print('accounts: ',accounts)
-                getRow(accounts,row_list,tag_id)
+                getRow(accounts,row_list,tag_id,1)
             
             # print('ROW LIST: ',row_list)
             print('length: ',len(row_list))
@@ -233,7 +269,7 @@ def exportgetCR():
             tag_id = journal.tag_id
             # print('accounts: ',accounts)
             row_list = []
-            getRow(accounts,row_list,tag_id)
+            getRow(accounts,row_list,tag_id,1)
 
             writer = UnicodeWriter()
             counter = 1
@@ -261,7 +297,7 @@ def exportgetCR():
             accounts = journal.accounts
             tag_id = journal.tag_id
             # print('accounts: ',accounts)
-            getRow(accounts,row_list,tag_id)
+            getRow(accounts,row_list,tag_id,1)
 
             # rest of the date
             for i in range(days):
@@ -270,7 +306,7 @@ def exportgetCR():
                 accounts = journal.accounts
                 tag_id = journal.tag_id
                 # print('accounts: ',accounts)
-                getRow(accounts,row_list,tag_id)
+                getRow(accounts,row_list,tag_id,1)
             
             # print('ROW LIST: ',row_list)
             print('length: ',len(row_list))
@@ -623,7 +659,7 @@ def exportCRReportToSAP():
             tag_id = j.tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id)
+            getRow(accounts,row_list,tag_id,1)
             row_lists.append(row_list)
         
         if len(journal_list) <= 0:
@@ -823,17 +859,13 @@ def exportBRReportToSAP():
             #end of enable [1]
 
             #disable in Staging [2]
-            try:
-                last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_exported':'0'})
-                month = last_journal.posting_date.month
-                year = last_journal.posting_date.year
-                last = calendar.monthrange(year,month)[1]
-                str_date = str(year) + '-' + str(month) + '-'
-                first_day = str_date + '01'
-                last_day = str_date + str(last)
-            except:
-                print('Billing Report Not Found!')
-                return
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_exported':'0'})
+            month = last_journal.posting_date.month
+            year = last_journal.posting_date.year
+            last = calendar.monthrange(year,month)[1]
+            str_date = str(year) + '-' + str(month) + '-'
+            first_day = str_date + '01'
+            last_day = str_date + str(last)
             #end of disable [2]
 
             journals = frappe.get_all('Journal Entry', filters={'report_type':'Billing','is_exported':'0','posting_date':['between',[first_day,last_day]]})
@@ -846,10 +878,16 @@ def exportBRReportToSAP():
             else:
                 print('No Billing Report is available to be exported!')
                 return
-            
+        row_lists = []
+        for j in journal_list:
+            tag_id = j.tag_id
+            accounts = j.accounts
+            row_list = []
+            getRow(accounts,row_list,tag_id,0)
+            row_lists.append(row_list)  
         # print('len journals: ',len(names))
         # print(names)
-        if len(journal_list) == 0:
+        if len(journal_list) <= 0:
             print('No Billing Found!')
             return
 
@@ -862,29 +900,50 @@ def exportBRReportToSAP():
         # else:
         #     print('return')
         # print('list: ',account_list)
-
         writer = UnicodeWriter()
-        counter = 1
-        i = 0
-        isDebit = False
-        for rows in account_list:
-            for row in rows:
-                i +=1
-                isDebit = False
-                if row['debit'] != 0:
-                    isDebit = True
-                # if counter == 1:
-                if isDebit:
-                    val = getValDeferred(row,isDebit)
-                    # print('val1: ',val)
-                    writer.writerow(val)
-                    counter+=1
+
+        combined_array = []
+        for rows in row_lists:
+            for item in rows:
+                combined_array.append(item)
+        # Sum up credit and debit
+        cumulative_sums = {}
+        for entry in combined_array:
+            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'])
+            if key not in cumulative_sums:
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
+            cumulative_sums[key]['credit'] += entry.get('credit', 0)
+            cumulative_sums[key]['debit'] += entry.get('debit', 0)
+            # Balance the credit and debit
+            for key, values in cumulative_sums.items():
+                credit = values['credit']
+                debit = values['debit']
+                if credit > debit:
+                    values['credit'] = credit - debit
+                    values['debit'] = 0.0
                 else:
-                    val = getValDeferred(row,isDebit)
-                    # print('val2: ',val)
-                    writer.writerow(val)
-                    counter = 1
-        
+                    values['credit'] = 0.0
+                    values['debit'] = debit - credit
+        # Convert the dictionary values to a list
+        result = list(cumulative_sums.values())
+        for entry in result:
+            print('----------entry inresult-----------------')
+            print(entry)
+
+        for row in result:
+            if(row['debit'] != 0):
+                counter = 1
+            else:
+                counter = 2
+            if counter == 1:
+                val = getValDeferred(row,1)
+                writer.writerow(val)
+            elif counter == 2:
+                val = getValDeferred(row,0)
+                writer.writerow(val)
+        print('----------writer-----------------')
+        print(writer)
+
         print('----------done unicodeWriter-----------------')
         createCSVExport(writer.getvalue(),filename,server_path)
         print('-----------done everything------------------')

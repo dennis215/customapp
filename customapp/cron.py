@@ -1077,7 +1077,9 @@ def createErrorLog(file,much,error_list,errordate):
 
     # print('error list ------------------------------------------------------------')
     # print(error_list)
+    print('errorlog:: ',errorlog)
     errorlog.save()
+    print('errorlog:: ',errorlog)
     print('name:: ',errorlog.name)
     # domain = 'http://175.136.236.153:8003' + '/app/journal-entry-error-log/'+ errorlog.name
     # domain = 'http://127.0.0.1:8000' + '/app/journal-entry-error-log/'+ errorlog.name
@@ -1864,7 +1866,7 @@ def doImportCollectionReport():
         file_list = zip_file.namelist()
         for file in file_list:
             if file in file_list:
-                cr_dict,cr = getCr2_pass_file(zip_file,file)
+                cr_dict,cr = getCr2_pass_file(zip_file,file,1)
                 split = file.split('_')
                 fileDate = split[2].split('.')[0]
                 dateSplit = fileDate.split('-')
@@ -1876,7 +1878,7 @@ def doImportCollectionReport():
                 print('--------------filenamessss: ',file)
                 error_list = doImportCollectionReportSingle(file,cr_dict,cr,batch_id,new_date)
                 errors.append(error_list)
-    if errors==[]:
+    if errors !=[]:
         flattened_data = [item for sublist in errors for item in sublist]
         returnData =  {"name": "Collection", "errorFileSummary":flattened_data}
     else:
@@ -1885,5 +1887,4 @@ def doImportCollectionReport():
     response = requests.request("POST", returnReqUrl,headers=headers,json=returnData, verify=False)  
     if response.status_code == 200:
         print("Request was successful (Status Code 200).")
-    
     
