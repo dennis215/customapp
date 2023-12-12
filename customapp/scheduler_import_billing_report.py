@@ -665,7 +665,7 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
 
 def doImportBillingReport():
     errors=[]
-    getFileData = {"name": "Pfile"}
+    getFileData = {"name": "pfile"}
     headers = {
         "Content-Type": "application/json",
     }
@@ -682,7 +682,7 @@ def doImportBillingReport():
         file_list = zip_file.namelist()
         for file in file_list:
             if file in file_list:
-                cr_dict,cr = getCr_pass_file(zip_file,file)
+                cr_dict,cr = getCr_pass_file(zip_file,file,0)
                 fileDate = file[-14:-4]
                 dateSplit = fileDate.split('-')
                 print("dateSplit  ",dateSplit)
@@ -696,9 +696,9 @@ def doImportBillingReport():
                 errors.append(error_list)
     if errors !=[]:
         flattened_data = [item for sublist in errors for item in sublist]
-        returnData =  {"name": "Pfile", "errorFileSummary":flattened_data}
+        returnData =  {"name": "pfile", "errorFileSummary":flattened_data}
     else:
-        returnData =  {"name": "Pfile", "errorFileSummary":[]}
+        returnData =  {"name": "pfile", "errorFileSummary":[]}
     print('errors: ',returnData)
     response = requests.request("POST", returnReqUrl,headers=headers,json=returnData, verify=False)
     if response.status_code == 200:
@@ -1971,8 +1971,8 @@ def createErrorLog(file,much,error_list,errordate):
             'file':file,
             'row':e['row'],
             'field':e['field'],
-            'value':e['val'],
-            'description':e['desc']
+            'value':e['value'],
+            'description':e['description']
         })
     errorlog.save()
     print('name:: ',errorlog.name)
