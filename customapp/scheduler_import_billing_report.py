@@ -696,9 +696,9 @@ def doImportBillingReport():
                 errors.append(error_list)
     if errors !=[]:
         flattened_data = [item for sublist in errors for item in sublist]
-        returnData =  {"name": "pfile", "errorFileSummary":flattened_data}
+        returnData =  {"name": "Pfile", "errorFileSummary":flattened_data}
     else:
-        returnData =  {"name": "pfile", "errorFileSummary":[]}
+        returnData =  {"name": "Pfile", "errorFileSummary":[]}
     print('errors: ',returnData)
     response = requests.request("POST", returnReqUrl,headers=headers,json=returnData, verify=False)
     if response.status_code == 200:
