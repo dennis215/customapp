@@ -131,10 +131,10 @@ def getAmount(amt):
 
 def getVal(row,counter):
     if counter == 1:
-        val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',round(getAmount(row['debit']), 2),'','',round(getAmount(row['debit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
+        val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',round((row['debit']), 2),'','',round((row['debit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
         # print('val 1: ',val)
     else:
-        val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+round(getAmount(row['credit']), 2),'','','-'+round(getAmount(row['credit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
+        val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+str(round((row['credit']), 2)),'','','-'+str(round((row['credit']), 2)),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'])
     
     # tag = True
     # if tag:
@@ -149,10 +149,10 @@ def getVal(row,counter):
 def getValDeferred(row,isDebit):
     try:
         if isDebit:
-            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',round(getAmount(row['debit']), 2),'','',round(getAmount(row['debit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'],row['san_count'],row['monthly_charge'],row['month_count'],row['current_month'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',round((row['debit']), 2),'','',round((row['debit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'],row['san_count'],row['monthly_charge'],row['month_count'],row['current_month'])
             # print('val 1: ',val)
         else:
-            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+round(getAmount(row['credit']), 2),'','','-'+round(getAmount(row['credit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'],row['san_count'],row['monthly_charge'],row['month_count'],row['current_month'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+str(round((row['credit']), 2)),'','','-'+str(round((row['credit']), 2)),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'],row['san_count'],row['monthly_charge'],row['month_count'],row['current_month'])
         return val
     except Exception as e:
         print('errors: ',e)
