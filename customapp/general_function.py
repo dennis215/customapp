@@ -262,7 +262,7 @@ def billingConvertToDict(dje):
             'cost_center_number':row.cost_center_number,
             # 'cost_center':row.cost_center.name,
             'currency':row.currency,
-            'debit_in_account_currency' : row.credit,
+            'debit_in_account_currency' : row.debit,
             'credit_in_account_currency' : row.credit,
             'remark':row.remark,
             'group':row.group,
@@ -674,6 +674,7 @@ def checkError(file,f1,f2,f3,row,errors,error_list,balance):
                     if val <= 0.0:
                         errors['error'] = True
                         error['description'] = 'Invalid Value'
+                        error['value'] = str(error['value'])
                         error_list.append(error)
                         return False
                     return True
@@ -815,7 +816,8 @@ def checkError(file,f1,f2,f3,row,errors,error_list,balance):
                     error['description'] = 'Not Balanced With Credit Row '+str(row-1)
                 elif field == 'credit_in_account_currency':
                     error['description'] = 'Not Balanced With Debit Row '+str(row-1)
-                print('error1: ',error,' val: ',val,' another: ',balance['val'])
+                error['val']=str(error['val'])
+                error['value']=str(error['value'])
                 error_list.append(error)
 
         # balance = val
@@ -1087,7 +1089,6 @@ def getCr2_pass_file(zip,file,isCollection):
         for r in reader:
             print('row: ',r)
             cr.append(r)
-
     print('-----------------------getCrString15-------------------',cr[1][1])
     print(cr)
     cr_dict = getDict2(cr,isCollection)
