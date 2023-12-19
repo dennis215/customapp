@@ -11,9 +11,9 @@ def getRow(accounts,row_list,tag_id,isCollection):
     tag = True
     counter = 1
     for a in accounts:
-        split_remark = a.remark.split('/')
-        first_half_remark = split_remark[0].strip()
-        remarks = first_half_remark + "/ "+current_datetime
+        # split_remark = a.remark.split('/')
+        # first_half_remark = split_remark[0].strip()
+        # remarks = first_half_remark + "/ "+current_datetime
         if(a.debit_in_account_currency==0):
             counter=2
         else:
@@ -27,7 +27,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'cost_center_number':a.cost_center_number,
                     'currency':a.currency,
                     'debit':a.debit_in_account_currency,
-                    'remark':remarks,
+                    'remark':a.remark,
                     'group':a.group,
                     'posting_date':a.posting_date,
                 }
@@ -38,7 +38,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'cost_center_number':a.cost_center_number,
                     'currency':a.currency,
                     'debit':a.debit_in_account_currency,
-                    'remark':remarks,
+                    'remark':a.remark,
                     'group':a.group,
                     'posting_date':a.posting_date,
                     'tax_amount':a.tax_amount,
@@ -63,7 +63,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'cost_center_number':a.cost_center_number,
                     'currency':a.currency,
                     'credit':a.credit_in_account_currency,
-                    'remark':remarks,
+                    'remark':a.remark,
                     'group':a.group,
                     'posting_date':a.posting_date,
                 }
@@ -74,7 +74,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'cost_center_number':a.cost_center_number,
                     'currency':a.currency,
                     'credit':a.credit_in_account_currency,
-                    'remark':remarks,
+                    'remark':a.remark,
                     'group':a.group,
                     'posting_date':a.posting_date,
                     'tax_amount':a.tax_amount,
