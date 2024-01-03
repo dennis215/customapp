@@ -73,17 +73,12 @@ def deferredRevenue():
         # else:
         #     print('No Billing Journal Entry Found!')
         #     return
-        jes = getDocList('Journal Entry',{'report_type':'Billing'})
-        if len(jes) > 0:
-            last_je = getDoc('Journal Entry',{'report_type':'Billing'})
-            last_tag_id = last_je.tag_id
-
-            deferr = getDocList('Deferred Revenue Journal Entry',{'tag_id':last_tag_id})
-            if len(deferr) > 0:
-                raise Exception('Deferred Revenue for Batch ID of ',str(last_tag_id),' is already existed!')
-            print('not deferred yet for this tag id: ',last_tag_id)
-
-
+        docCheck = getLastMonthName(3)
+        doc = frappe.get_last_doc('Deferred Revenue Journal Entry')
+        print('docCheck docCheck docCheck: ',docCheck)
+        if(doc.name==docCheck):
+            raise Exception('Deferred entry created for '+docCheck)
+        print(docCheck+'not created yet')
 
         # 1) create new dje                                                     done!
         deferred = frappe.new_doc('Deferred Revenue Journal Entry')
@@ -102,14 +97,16 @@ def deferredRevenue():
         print('dje list length: ',len(dje_list))
         # 2) take jea from last month dje                                       done!
         # 3) select 2 that month count is not 0
-        dr_exist, last_djea, last_posting_date = getJEALastDR()
-        # print('--------------lastdjea :')
-        # print('last djea: ',last_djea)
-        # for l in last_djea:
-        #     print('--------------')
-        #     print(l)
+        dr_exist, last_djea, last_posting_date = getJEALastDR(docCheck)
+        # dr_exist= got previous deferred, last_djea = deferred JE, posting= this month last day
+        print('--------------lastdjea :')
+        print('last djea: ',last_djea)
+        
+        for l in last_djea:
+            print('--------------')
+            print(l)
 
-        # print('last djea length: ',len(last_djea))
+        print('last djea length: ',len(last_djea))
         print('2) done select 2 that month count is not 0')
         
         # print('lengtht: ',len(last_deferred_list))
@@ -121,7 +118,7 @@ def deferredRevenue():
         if not dr_exist:
             # last_posting_date = date(year=2023,month=1,day=31)
             # next_date = getNextDate(last_posting_date)
-            next_date = date(day=31,month=1,year=2023)
+            next_date = getNextDate(last_posting_date)
             # deferred.tag_id = next_date
             default = True
         else:
@@ -136,25 +133,23 @@ def deferredRevenue():
             for row in last_djea:
                 dje_list.append(row)
         
-        if checkExist(next_date):
-            print('Deferred Revenue Journal Entry for ',str(next_date),' already exist!')
-            return
+        # if checkExist(next_date):
+        #     print('Deferred Revenue Journal Entry for ',str(next_date),' already exist!')
+        #     return
             
-        # print('dje list length: ',len(dje_list))
-        # print('----dje lists',dje_list)
-            print('3) done put 3 into dje list')
+        # # print('dje list length: ',len(dje_list))
+        # # print('----dje lists',dje_list)
+        #     print('3) done put 3 into dje list')
 
         # 5) take jea from last month je which have deferred revenue            done!
         # if dr_exist:
         je_exist,row_JE_list, tag_id = getRowLastJE(next_date)
-        print('--------tag----id-------: ',tag_id)
-        deferred.tag_id = tag_id
     # print('last je length: ',len(row_JE_list))
         print('4) done take jea from last month je')
-        # print('djelist: ',dje_list)
-        # for l in row_JE_list:
-        #     print('-----')
-        #     print(l)
+        for l in row_JE_list:
+            print('-----')
+            print(l)
+
 
         # 6) put 6 into dje list
         if not je_exist and default:
@@ -307,17 +302,24 @@ def sendEmail(msg,subject,doctype,name):
 
 def getLastMonthName(f1):
     now = datetime.now()
-    month = now.month - 1   # last month
-    date1 = date(day=1, month=month, year=now.year)
+    year = now.year
+    if now.month == 1:
+        month = 12
+        year =year-1
+    else:
+        month = now.month - 1   # last month
+    date1 = date(day=1, month=month, year=year)
     last_month = ''
     if f1 == 1:
         last_month = date1.strftime('%B')+' - '+'Billing'
     elif f1 == 2:
         last_month = date1.strftime('%B')+' '+now.strftime('%Y')
         return last_month
+    elif f1==3:
+        last_month = str(year)+" - "+date1.strftime('%B')
+        return last_month
     # print('name: ',last_month)
     title = ["like", f"%{last_month}%"]
-
     return title
 
 def getCurrentMonthName():
@@ -326,6 +328,17 @@ def getCurrentMonthName():
     
     return name
 
+def get_first_day(posting_date):
+    # Assuming posting_date is a string in the format 'YYYY-MM-DD'
+    posting_date = datetime.strptime(str(posting_date), '%Y-%m-%d')
+    
+    # Get the first day of the month
+    first_day = posting_date.replace(day=1)
+    
+    # Format the result as a string if needed
+    first_day_str = first_day.strftime('%Y-%m-%d')
+    
+    return first_day_str
 def getRowLastJE(posting_date):
     # print('last_month: ',last_month)
     # title = getLastMonthName(1)
@@ -334,24 +347,29 @@ def getRowLastJE(posting_date):
     # print('title: ',title)
     # doc = frappe.get_last_doc('Journal Entry', filters={'title':title,'report_type':'Billing'})
     je_exist = False
-    print('postingdate: ',posting_date)
-        
-    try:
-        doc = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','posting_date':posting_date})
+    firstDay = get_first_day(posting_date)   
+    doclist = frappe.get_all('Journal Entry',
+    filters={'report_type': 'Billing',"docstatus":1, 'posting_date': ['between', [firstDay, posting_date]]},fields=['*'])
+    # doclist = frappe.get_list('Journal Entry', filters={'report_type':'Billing',"docstatus":1,'posting_date':['>=', firstDay, '<=', posting_date]})
+    if doclist:
         je_exist = True
-    except:
+    else: 
         return je_exist,'',''
+    
+    account_entries_list =[]
+    for doc in doclist:
+        journal_entry = frappe.get_doc('Journal Entry', doc.name)
+        account_entries_list.append(journal_entry.accounts)
+    flat_account_entries_list = [entry for sublist in account_entries_list for entry in sublist]
     # print('doc name: ',doc.name)
-    account_entries_list = doc.accounts
     # print('row list:')
     # print(row_list)
     # print('length row: ',len(row_list))
 
     data_entries_list = []
-    for row in account_entries_list:
-        # print(row.account_number)
+    for row in flat_account_entries_list:
     # row = account_entries_list[0]
-        if not row.revenue_account or row.revenue_account == '0' or not row.new_cost_center or row.new_cost_center == '0':
+        if row.month_count <=1:
             pass
         else:
             data = {
@@ -525,102 +543,101 @@ def doLogicDeferred2(dje_list):
     i = -1
 
     for row in dje_list:
-        i += 1
-        if isBegin:
-            counter = 2
-            isDebitFirst = False
-            if row['credit_in_account_currency'] == 0.0:
-                counter = 1
-                isDebitFirst = True
-                # print('debit: ',row['debit_in_account_currency'],' credit: ',row['credit_in_account_currency'])
-            isBegin = False
-            revenue_counter = 0
-            seq = 1
-
-        if revenue_counter == 0:
-            if seq == 2:
-                revenue_counter = 1
-
-            if counter == 1:
-                if seq == 1:
-                    seq = 2
-                    counter = 2
-
-                deferred_revenue, row = doCalculate(row,1)
-                row['debit_in_account_currency'] = deferred_revenue
-                update_list.append(row)
-                row1 = row.copy()
-                deferred_revenue2, row_1 = doCalculate(row1,2)
-                row_1['debit_in_account_currency'] = deferred_revenue2
-                row_1['credit_in_account_currency'] = 0
-
-            elif counter == 2:
-                if seq == 1:
-                    seq = 2
+        if row['month_count'] >1:
+            i += 1
+            if isBegin:
+                counter = 2
+                isDebitFirst = False
+                if row['credit_in_account_currency'] == 0.0:
                     counter = 1
+                    isDebitFirst = True
+                    # print('debit: ',row['debit_in_account_currency'],' credit: ',row['credit_in_account_currency'])
+                isBegin = False
+                revenue_counter = 0
+                seq = 1
 
-                deferred_revenue, row = doCalculate(row,1)
-                row['credit_in_account_currency'] = deferred_revenue
-                update_list.append(row)
-                row2 = row.copy()
-                deferred_revenue2, row_2 = doCalculate(row2,2)
-                row_2['credit_in_account_currency'] = deferred_revenue2
-                row_2['debit_in_account_currency'] = 0
-            
+            if revenue_counter == 0:
+                if seq == 2:
+                    revenue_counter = 1
 
-        if revenue_counter == 1:
-            revenue_counter = 0
-            isBegin = True
-            seq = 0
+                if counter == 1:
+                    if seq == 1:
+                        seq = 2
+                        counter = 2
 
-            if isDebitFirst:
-                row_1['account_number'] = row_2['account_number']
-                row_1['account'] = row_2['account']
+                    deferred_revenue, row = doCalculate(row,1)
+                    row['debit_in_account_currency'] = deferred_revenue
+                    update_list.append(row)
+                    row1 = row.copy()
+                    deferred_revenue2, row_1 = doCalculate(row1,2)
+                    row_1['debit_in_account_currency'] = deferred_revenue2
+                    row_1['credit_in_account_currency'] = 0
 
-                cost_center = frappe.get_last_doc('Cost Center',filters={'cost_center_number':row_1['profit_or_cost_center_number']})
-                row_1['cost_center_number'] = row_2['cost_center_number']
+                elif counter == 2:
+                    if seq == 1:
+                        seq = 2
+                        counter = 1
+
+                    deferred_revenue, row = doCalculate(row,1)
+                    row['credit_in_account_currency'] = deferred_revenue
+                    update_list.append(row)
+                    row2 = row.copy()
+                    deferred_revenue2, row_2 = doCalculate(row2,2)
+                    row_2['credit_in_account_currency'] = deferred_revenue2
+                    row_2['debit_in_account_currency'] = 0
+                
+            if revenue_counter == 1:
+                revenue_counter = 0
+                isBegin = True
+                seq = 0
+
+                if isDebitFirst:
+                    row_1['account_number'] = row_2['account_number']
+                    row_1['account'] = row_2['account']
+
+                    cost_center = frappe.get_last_doc('Cost Center',filters={'cost_center_number':row_1['profit_or_cost_center_number']})
+                    row_1['cost_center_number'] = row_2['cost_center_number']
+                    # row_1['cost_center'] = row_2['cost_center']
+                    # change
+                    row_1['cost_center'] = cost_center.name
+                    row_2['cost_center'] = cost_center.name
+                    row_2['revenue_account'] = None
+                    row_2['account_number'] = row_1['revenue_account']
+                    acc = frappe.get_last_doc('Account',filters={'account_number':row_2['account_number']})
+                    row_2['account'] = acc.name
+                    row_1['month_count'] = 1
+                    row_2['month_count'] = 1
+
+                    new_list.append(row_1)
+                    new_list.append(row_2)
+                    # print('isdebitfirst true')
+                else:
+                    row_2['account_number'] = row_1['account_number']
+                    row_2['account'] = row_1['account']
+                    # change
+                    cost_center = frappe.get_last_doc('Cost Center',filters={'cost_center_number':row_1['profit_or_cost_center_number']})
+                    row_1['cost_center'] = cost_center.name
+                    row_2['cost_center'] = cost_center.name
+
+                    row_2['cost_center_number'] = row_1['cost_center_number']
+                    # row_2['cost_center'] = row_1['cost_center']
+                    row_1['revenue_account'] = None
+                    row_1['account_number'] = row_2['revenue_account']
+                    acc = frappe.get_last_doc('Account',filters={'account_number':row_1['account_number']})
+                    row_1['account'] = acc.name
+                    row_2['month_count'] = 1
+                    row_1['month_count'] = 1
+                # row_1['cost_center_number'] = row_2['cost_center_number']
                 # row_1['cost_center'] = row_2['cost_center']
-                # change
-                row_1['cost_center'] = cost_center.name
-                row_2['cost_center'] = cost_center.name
+                # row_2['revenue_account'] = None
+                # row_2['account_number'] = row_1['revenue_account']
+                # acc = frappe.get_last_doc('Account',filters={'account_number':row_2['account_number']})
+                # row_2['account'] = acc.name
+                # row_1['month_count'] = 1
+                # row_2['month_count'] = 1
 
-                row_2['revenue_account'] = None
-                row_2['account_number'] = row_1['revenue_account']
-                acc = frappe.get_last_doc('Account',filters={'account_number':row_2['account_number']})
-                row_2['account'] = acc.name
-                row_1['month_count'] = 1
-                row_2['month_count'] = 1
-
-                new_list.append(row_1)
-                new_list.append(row_2)
-                # print('isdebitfirst true')
-            else:
-                row_2['account_number'] = row_1['account_number']
-                row_2['account'] = row_1['account']
-                # change
-                cost_center = frappe.get_last_doc('Cost Center',filters={'cost_center_number':row_1['profit_or_cost_center_number']})
-                row_1['cost_center'] = cost_center.name
-                row_2['cost_center'] = cost_center.name
-
-                row_2['cost_center_number'] = row_1['cost_center_number']
-                # row_2['cost_center'] = row_1['cost_center']
-                row_1['revenue_account'] = None
-                row_1['account_number'] = row_2['revenue_account']
-                acc = frappe.get_last_doc('Account',filters={'account_number':row_1['account_number']})
-                row_1['account'] = acc.name
-                row_2['month_count'] = 1
-                row_1['month_count'] = 1
-            # row_1['cost_center_number'] = row_2['cost_center_number']
-            # row_1['cost_center'] = row_2['cost_center']
-            # row_2['revenue_account'] = None
-            # row_2['account_number'] = row_1['revenue_account']
-            # acc = frappe.get_last_doc('Account',filters={'account_number':row_2['account_number']})
-            # row_2['account'] = acc.name
-            # row_1['month_count'] = 1
-            # row_2['month_count'] = 1
-
-                new_list.append(row_2)
-                new_list.append(row_1)
+                    new_list.append(row_2)
+                    new_list.append(row_1)
     return new_list
 
 
@@ -630,10 +647,7 @@ def doAddtoNewDJE(deferred,dje_list):
     # print('dje list: ',dje_list)
     now = datetime.now().date()
     posting_date = dje_list[0]['posting_date']
-    # print('----dje list in add to new dje')
-    # print(dje_list)
     for row in dje_list:
-        # print('row: ',row)
         deferred.append('accounts',row)
 
     # title = getDRTitle(now)
@@ -652,7 +666,7 @@ def doAddtoNewDJE(deferred,dje_list):
     # except Exception as e:
     #     print('exception: ',e)
 
-def getJEALastDR():
+def getJEALastDR(yearMonth):
     # for real
     # title = getLastMonthName(2)
     # deferred = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'name':title})
@@ -671,19 +685,16 @@ def getJEALastDR():
     # if month == 'February' or month == 'March':
     # last_posting_date = deferred.tag_id
     # last_posting_date = deferred.posting_date
-    last_posting_date = getNextDate2(deferred.doc_name)
+    last_posting_date = getNextDate2(deferred.doc_name,yearMonth)
 
 
     row_list = deferred.accounts
-    # print('row list: ',row_list)
-    # print('row list length: ',len(row_list))
     next_date = getNextDate(last_posting_date)
 
     rows_list = []
     for row in row_list:
-        # print('r: ',rowaccount_number)
-        # if rowrevenue_account != '':
-        # print('=== month: ',row.month_count)
+        if row.revenue_account != '':
+            print('=== month: ',row.month_count)
         if row.month_count != 0:
             acc_dict = {
                 'account':row.account,
@@ -814,6 +825,7 @@ def createDeferredAccountingEntries(deferred,tag_id):
     #     print('\n\n')
 
     new_list = doLogicDeferred2(dr)
+    print("new list length",len(new_list))
     counter = 1
     total_debit = 0
     total_credit = 0

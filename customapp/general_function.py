@@ -61,15 +61,21 @@ def getNextDate(dates):
     
     return date(day=day, month=month, year=year)
 
-def getNextDate2(doc_name):
+def getNextDate2(doc_name,yearMonth):
+    if(doc_name==yearMonth):
+        raise Exception('Deferred entry created for '+yearMonth)
+    print('---doc_name--: ',doc_name)
     split = doc_name.split(' ')
     month_name = split[2]
+    print('---month_name--: ',month_name)
     year = int(split[0])
     month_datetime = datetime.strptime(month_name, '%B')
+    print('---month_datetime--: ',month_datetime)
     month_num = month_datetime.month
     print('---month_num--: ',month_num)
     days = calendar.monthrange(year=year, month=month_num)
     dates = date(day=days[1],year=year,month=month_num)
+    print('---dates--: ',dates)
     return dates
 
 def getDoc(doctype, filters={}):
@@ -134,6 +140,8 @@ def getDRTitle(dates):
     monthname = calendar.month_name[month]
     # title = monthname +' - '+str(year)
     title = str(year) +' - '+ monthname
+    print("------------------------------------title---------------------")
+    print(title)
     return title
 
 def sendEmail(msg,subject,doctype,name,role):
