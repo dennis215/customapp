@@ -673,8 +673,8 @@ def doImportBillingReport():
     # getFileReqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
     # returnReqUrl = 'http://175.136.236.153:8106/internal/SchedulerEOD//ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
     # Staging
-    getFileReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    returnReqUrl = 'https://bs.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
+    getFileReqUrl = 'https://bsstg1.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    returnReqUrl = 'https://bsstg1.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
     response = requests.request("POST", getFileReqUrl,headers=headers,json=getFileData, verify=False)  
     if response.status_code == 200:
         zip = response.content
@@ -696,9 +696,9 @@ def doImportBillingReport():
                 errors.append(error_list)
     if errors !=[]:
         flattened_data = [item for sublist in errors for item in sublist]
-        returnData =  {"name": "pfile", "errorFileSummary":flattened_data}
+        returnData =  {"name": "Pfile", "errorFileSummary":flattened_data}
     else:
-        returnData =  {"name": "pfile", "errorFileSummary":[]}
+        returnData =  {"name": "Pfile", "errorFileSummary":[]}
     print('errors: ',returnData)
     response = requests.request("POST", returnReqUrl,headers=headers,json=returnData, verify=False)
     if response.status_code == 200:
