@@ -122,10 +122,11 @@ def deferredRevenue():
             # last_posting_date = date(year=2023,month=1,day=31)
             # next_date = getNextDate(last_posting_date)
             today = date.today()
-            first_day_last_month = today.replace(day=1) - timedelta(days=today.day)
-            first_day_previous_month = first_day_last_month.replace(day=1)
-            print("----------"+first_day_previous_month.strftime("%Y-%m-%d"))
-            next_date = first_day_previous_month
+            first_day_this_month = today.replace(day=1)
+            # Calculate the last day of the previous month
+            last_day_last_month = first_day_this_month - timedelta(days=1)
+            print("----------"+last_day_last_month.strftime("%Y-%m-%d"))
+            next_date = last_day_last_month
             # deferred.tag_id = next_date
             default = True
         else:
