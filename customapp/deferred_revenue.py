@@ -121,7 +121,11 @@ def deferredRevenue():
         if not dr_exist:
             # last_posting_date = date(year=2023,month=1,day=31)
             # next_date = getNextDate(last_posting_date)
-            next_date = getNextDate(date.today())
+            today = date.today()
+            first_day_last_month = today.replace(day=1) - timedelta(days=today.day)
+            first_day_previous_month = first_day_last_month.replace(day=1)
+            print("----------"+first_day_previous_month)
+            next_date = first_day_previous_month
             # deferred.tag_id = next_date
             default = True
         else:
