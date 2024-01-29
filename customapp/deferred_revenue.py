@@ -121,7 +121,7 @@ def deferredRevenue():
         if not dr_exist:
             # last_posting_date = date(year=2023,month=1,day=31)
             # next_date = getNextDate(last_posting_date)
-            next_date = getNextDate(last_posting_date)
+            next_date = getNextDate(date.today())
             # deferred.tag_id = next_date
             default = True
         else:
