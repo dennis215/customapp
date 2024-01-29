@@ -124,7 +124,7 @@ def deferredRevenue():
             today = date.today()
             first_day_last_month = today.replace(day=1) - timedelta(days=today.day)
             first_day_previous_month = first_day_last_month.replace(day=1)
-            print("----------"+first_day_previous_month)
+            print("----------"+first_day_previous_month.strftime("%Y-%m-%d"))
             next_date = first_day_previous_month
             # deferred.tag_id = next_date
             default = True
