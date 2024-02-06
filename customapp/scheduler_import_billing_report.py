@@ -670,8 +670,8 @@ def doImportBillingReport():
         "Content-Type": "application/json",
     }
     # prod internal
-    getFileReqUrl = 'http://172.18.92.101:8080/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    returnReqUrl = 'http://172.18.92.101:8080/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
+    getFileReqUrl = 'http://172.18.96.101:8080/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    returnReqUrl = 'http://172.18.96.101:8080/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
     # prod
     # getFileReqUrl = 'https://bsportal.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
     # returnReqUrl = 'https://bsportal.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
