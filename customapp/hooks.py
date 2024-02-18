@@ -123,6 +123,8 @@ scheduler_events = {
             "customapp.erptosap.exportCRReportToSAP",
             "customapp.erptosap.exportDRReportToSAP",
             "customapp.erptosap.exportBRReportToSAP",
+            "customapp.erptosap.exportJBBRReportToSAP",
+			"customapp.erptosap.exportJBCRReportToSAP",
 		],
         "*/2 * * * *": [
 			"customapp.scheduler_import_billing_report.doImportBillingReport",

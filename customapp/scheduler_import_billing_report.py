@@ -670,14 +670,14 @@ def doImportBillingReport():
         "Content-Type": "application/json",
     }
     # prod internal
-    getFileReqUrl = 'http://172.18.96.101:8080/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    returnReqUrl = 'http://172.18.96.101:8080/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
+    # getFileReqUrl = 'http://172.18.96.101:8080/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    # returnReqUrl = 'http://172.18.96.101:8080/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
     # prod
     # getFileReqUrl = 'https://bsportal.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
     # returnReqUrl = 'https://bsportal.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
     # Staging
-    # getFileReqUrl = 'https://bsstg1.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
-    # returnReqUrl = 'https://bsstg1.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
+    getFileReqUrl = 'https://bsstg1.indahwater.app:8443/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
+    returnReqUrl = 'https://bsstg1.indahwater.app:8443/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
     response = requests.request("POST", getFileReqUrl,headers=headers,json=getFileData, verify=False)  
     if response.status_code == 200:
         zip = response.content

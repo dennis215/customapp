@@ -983,6 +983,7 @@ def makeDict2(row,counter,isCollection):
             'remark': row[23],
             'posting_date': row[30],
             'group': row[31],
+            'is_jb': row[33]
         }
     else:
             dicts = {
