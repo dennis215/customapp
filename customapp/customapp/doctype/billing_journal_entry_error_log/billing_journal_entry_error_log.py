@@ -12,30 +12,30 @@ class BillingJournalEntryErrorLog(Document):
 			self.db_set("seen", 1, update_modified=0)
 			frappe.db.commit()
 
-	def after_insert(self):
-		start_date = self.start_date
-		# if not isinstance(start_date, str):
-		# 	start_date = start_date.strftime('%Y-%m-%d')
-		# end_date = start_date
+	# def after_insert(self):
+	# 	start_date = self.start_date
+	# 	# if not isinstance(start_date, str):
+	# 	# 	start_date = start_date.strftime('%Y-%m-%d')
+	# 	# end_date = start_date
 
-		file,filename,path = createcsv(start_date)
-		print('FILENAME: ',filename)
+	# 	file,filename,path = createcsv(start_date)
+	# 	print('FILENAME: ',filename)
 
-		# file_name = save_file(fname=filename, content=file.read(), dt="attachcsv", dn=self.name)
-		file_doc = frappe.get_doc({
-			"doctype": "File",
-			"file_url": "/files/"+filename,
-			"file_name": filename,
-			# "attached_to_doctype": self.doctype,
-			# "attached_to_name": self.name,
-			"content": frappe.read_file(path)
-		})
-		# file_doc.insert(ignore_permissions=True)
-		file_doc.save()
-		print('file url: ',file_doc.file_url)
-		self.collection_report_csv = file_doc.file_url
-		return True
-		pass
+	# 	# file_name = save_file(fname=filename, content=file.read(), dt="attachcsv", dn=self.name)
+	# 	file_doc = frappe.get_doc({
+	# 		"doctype": "File",
+	# 		"file_url": "/files/"+filename,
+	# 		"file_name": filename,
+	# 		# "attached_to_doctype": self.doctype,
+	# 		# "attached_to_name": self.name,
+	# 		"content": frappe.read_file(path)
+	# 	})
+	# 	# file_doc.insert(ignore_permissions=True)
+	# 	file_doc.save()
+	# 	print('file url: ',file_doc.file_url)
+	# 	self.collection_report_csv = file_doc.file_url
+	# 	return True
+	# 	pass
 
 
 # def createcsv(start_date, end_date):

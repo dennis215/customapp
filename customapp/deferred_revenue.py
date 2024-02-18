@@ -74,11 +74,14 @@ def deferredRevenue():
         #     print('No Billing Journal Entry Found!')
         #     return
         docCheck = getLastMonthName(3)
-        doc = frappe.get_last_doc('Deferred Revenue Journal Entry')
-        print('docCheck docCheck docCheck: ',docCheck)
-        if(doc.name==docCheck):
-            raise Exception('Deferred entry created for '+docCheck)
-        print(docCheck+'not created yet')
+        try:
+            doc = frappe.get_last_doc('Deferred Revenue Journal Entry')
+            print('docCheck docCheck docCheck: ',docCheck)
+            if(doc.name==docCheck):
+                raise Exception('Deferred entry created for '+docCheck)
+            print(docCheck+'not created yet')
+        except:  
+            print('No Deferred Revenue Journal Entry')
 
         # 1) create new dje                                                     done!
         deferred = frappe.new_doc('Deferred Revenue Journal Entry')
@@ -118,7 +121,12 @@ def deferredRevenue():
         if not dr_exist:
             # last_posting_date = date(year=2023,month=1,day=31)
             # next_date = getNextDate(last_posting_date)
-            next_date = getNextDate(last_posting_date)
+            today = date.today()
+            first_day_this_month = today.replace(day=1)
+            # Calculate the last day of the previous month
+            last_day_last_month = first_day_this_month - timedelta(days=1)
+            print("----------"+last_day_last_month.strftime("%Y-%m-%d"))
+            next_date = last_day_last_month
             # deferred.tag_id = next_date
             default = True
         else:
