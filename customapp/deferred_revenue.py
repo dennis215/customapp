@@ -734,6 +734,8 @@ def getJEALastDR(yearMonth):
 
 # def createDeferredAccountingEntries(journal,new_date):
 def createDeferredAccountingEntries(deferred,tag_id):
+    today = date.today()
+    first_day_this_month = today.replace(day=1)
     deferredje = frappe.new_doc('Journal Entry')
     deferredje.report_type = 'Deferred Revenue'
     deferredje.entry_type = "Journal Entry"
@@ -862,9 +864,9 @@ def createDeferredAccountingEntries(deferred,tag_id):
     # deferredje.total_deferred_credit = getRM(total_credit)
     deferredje.total_debit = getRM(total_debit)
     deferredje.total_credit = getRM(total_credit)
-    deferredje.posting_date = posting_date
+    deferredje.posting_date = first_day_this_month
     deferredje.tag_id = tag_id
-    deferredje.title = 'Deferred Revenue - '+ getDateString(posting_date)
+    deferredje.title = 'Deferred Revenue - '+ getDateString(first_day_this_month)
     deferredje.save()
     deferredje.submit()
     frappe.db.commit()
