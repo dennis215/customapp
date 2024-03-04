@@ -158,6 +158,7 @@ def makeDict(row,counter):
         'monthly_charge': row[36],
         'month_count': row[37],
         'current_month': row[38],
+        'is_jb': 1 if row[41] else 0,
     }
     try:
         dicts['revenue_account'] = row[39]
