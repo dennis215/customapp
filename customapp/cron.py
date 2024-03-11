@@ -1260,8 +1260,8 @@ def createAccountingEntries(journal,cr,end_date):
         journal.total_debit = total_debit
         journal.total_credit = total_credit
         journal.entry_type = "Journal Entry"
-        
-        journal.posting_date =journal.posting_date = latest_posting.astimezone(pytz.timezone('Asia/Kuala_Lumpur'))
+        postingdate=pytz.timezone('Asia/Kuala_Lumpur').localize(datetime.combine(latest_posting, datetime.min.time()))
+        journal.posting_date = postingdate.strftime('%Y-%m-%d')
         # print('--------------POSTING DATE: ',posting_date)
         # month = getMonth(posting_date)
         # year = latest_posting.year
