@@ -1262,6 +1262,8 @@ def createAccountingEntries(journal,cr,end_date):
         
         journal.posting_date = latest_posting
         print('--------------POSTING DATE: ',posting_date)
+        print('--------------end_date DATE: ',end_date)
+        print('--------------latest_posting DATE: ',latest_posting)
         # month = getMonth(posting_date)
         # year = latest_posting.year
         # tag_id = getDatetime(posting_date)
