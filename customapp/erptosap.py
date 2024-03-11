@@ -43,6 +43,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'group':a.group,
                     'posting_date':a.posting_date,
                     'tax_amount':a.tax_amount,
+                    'tax_code':a.tax_code,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
                     'san_count':a.san_count,
                     'monthly_charge':a.monthly_charge,
@@ -80,7 +81,8 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'remark':a.remark,
                     'group':a.group,
                     'posting_date':a.posting_date,
-                    'tax_amount':a.tax_amount,
+                    'tax_amount':a.tax_amount,  
+                    'tax_code':a.tax_code,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
                     'san_count':a.san_count,
                     'monthly_charge':a.monthly_charge,
@@ -153,10 +155,10 @@ def getVal(row,counter):
 def getValDeferred(row,isDebit):
     try:
         if isDebit:
-            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',round((row['debit']), 2),'','',round((row['debit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',round((row['debit']), 2),'','',round((row['debit']), 2),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),str(row['tax_code']),row['profit_or_cost_center_number'])
             # print('val 1: ',val)
         else:
-            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+str(round((row['credit']), 2)),'','','-'+str(round((row['credit']), 2)),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),'',row['profit_or_cost_center_number'])
+            val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+str(round((row['credit']), 2)),'','','-'+str(round((row['credit']), 2)),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],str(row['tax_amount']),str(row['tax_code']),row['profit_or_cost_center_number'])
         return val
     except Exception as e:
         print('errors: ',e)
@@ -936,7 +938,7 @@ def exportBRReportToSAP():
         for entry in combined_array:
             key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'])
             if key not in cumulative_sums:
-                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
             cumulative_sums[key]['debit'] += entry.get('debit', 0)
             # Balance the credit and debit
@@ -1190,7 +1192,7 @@ def exportJBBRReportToSAP():
         for entry in combined_array:
             key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'])
             if key not in cumulative_sums:
-                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
             cumulative_sums[key]['debit'] += entry.get('debit', 0)
             # Balance the credit and debit
