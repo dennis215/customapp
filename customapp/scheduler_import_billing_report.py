@@ -2464,7 +2464,9 @@ def createAccountingEntries(journal,cr,end_date):
         journal.total_debit = total_debit
         journal.total_credit = total_credit
         journal.entry_type = "Journal Entry"
-        
+        print('--------------POSTING DATE: ',posting_date)
+        print('--------------end_date DATE: ',end_date)
+        print('--------------latest_posting DATE: ',latest_posting)
         journal.posting_date = latest_posting
         # print('--------------POSTING DATE: ',posting_date)
         # month = getMonth(posting_date)
