@@ -5,6 +5,7 @@ import csv, requests, json, calendar, os,zipfile,io
 # from frappe.core.doctype.file.file import File
 import io
 from customapp.general_function import *
+import pytz
 
 def getEmail(role_name):
     userlist = []
@@ -1260,10 +1261,8 @@ def createAccountingEntries(journal,cr,end_date):
         journal.total_credit = total_credit
         journal.entry_type = "Journal Entry"
         
-        journal.posting_date = latest_posting
-        print('--------------POSTING DATE: ',posting_date)
-        print('--------------end_date DATE: ',end_date)
-        print('--------------latest_posting DATE: ',latest_posting)
+        journal.posting_date =journal.posting_date = latest_posting.astimezone(pytz.timezone('Asia/Kuala_Lumpur'))
+        # print('--------------POSTING DATE: ',posting_date)
         # month = getMonth(posting_date)
         # year = latest_posting.year
         # tag_id = getDatetime(posting_date)
