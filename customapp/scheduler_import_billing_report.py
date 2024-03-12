@@ -2469,7 +2469,7 @@ def createAccountingEntries(journal,cr,end_date):
         # print('--------------end_date DATE: ',end_date)
         # print('--------------latest_posting DATE: ',latest_posting)
         postingdate=pytz.timezone('Asia/Kuala_Lumpur').localize(datetime.combine(latest_posting, datetime.min.time()))
-        journal.posting_date = postingdate.strftime('%Y-%m-%d')
+        journal.posting_date = posting_date
         # print('--------------POSTING DATE: ',posting_date)
         # month = getMonth(posting_date)
         # year = latest_posting.year
