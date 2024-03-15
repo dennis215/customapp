@@ -19,15 +19,6 @@ def checkExist(dates):
 
 def deferredRevenue():
     print('----------------------------deferred revenue')
-    # now = datetime.now()
-    # ts = int(now.timestamp())
-    # sch = frappe.get_last_doc('Scheduled Job Type',filters={'method':'customapp.deferred_revenue.deferredRevenue'})
-    # sch.time2 = ts
-    # sch.save()
-    # doc = frappe.new_doc('testdoctype2')
-    # doc.save()
-    # frappe.db.commit()
-    # return
     global domain, site
     # domain = 'http://127.0.0.1:8000'
     # domain = 'http://175.136.236.153:8003'
@@ -35,45 +26,14 @@ def deferredRevenue():
     sites = frappe.utils.get_site_path()
     split = sites.split('/')
     site = split[1]
-    # print('--Site: ',site,' domain: ',domain)
     scheduler = frappe.get_last_doc('Scheduler Manager',filters={'name':'Deferred Revenue (Import)'})
+    if scheduler.import_datetime:
+        import_datetime=scheduler.import_datetime
+    else:
+        import_datetime = datetime.now()
     control = scheduler.control
-    # if control == 'Stop':
-    #     print('--------------------Deferred Revenue Scheduler is STOPPED')
-    # elif control == 'Play':
     if True:
-    #     print('--------------------Deferred Revenue Scheduler is PLAYING')
-    #     while True:
-    #         sch = frappe.get_last_doc('Scheduled Job Type',filters={'method':'customapp.deferred_revenue.deferredRevenue'})
-    #         now = datetime.now()
-    #         ts = int(now.timestamp())
-    #         diff = ts - sch.time1
-    #         if diff >= 60:
-    #             print('diff: ',diff,' break')
-    #             sch.time1 = ts
-    #             sch.save()
-    #             frappe.db.commit()
-    #             break
-    #         else:
-    #             time.sleep(1)
-    #             print('diff: ',diff)
-
-        # bill_je = frappe.get_list('Journal Entry',filters={'report_type':'Billing'})
-        # if bill_je:
-        #     if len(bill_je) > 1:
-        #         exist,date_take,date_put = checkDo()
-        #         print('date_take: ',date_take)
-        #         print('date_put: ',date_put)
-        #         if not exist:
-        #             print('not exist')
-        #             return
-        #     else:
-        #         print('There is only one Billing Journal Entry Found!')
-        #         return
-        # else:
-        #     print('No Billing Journal Entry Found!')
-        #     return
-        docCheck = getLastMonthName(3)
+        docCheck = getLastMonthName(3,import_datetime)
         try:
             doc = frappe.get_last_doc('Deferred Revenue Journal Entry')
             print('docCheck docCheck docCheck: ',docCheck)
@@ -85,13 +45,8 @@ def deferredRevenue():
 
         # 1) create new dje                                                     done!
         deferred = frappe.new_doc('Deferred Revenue Journal Entry')
-        # deferred.tag_id = date_take
-        # for real
-        # doc_name = getCurrentMonthName()
-        # deferred.doc_name = doc_name
-        deferred.created = datetime.now().date()
-        # for testing
-        # deferred.doc_name = ''.join(random.choices(string.digits, k=4))
+
+        deferred.created = import_datetime.date()
         print('1) Done create new dje')
 
         dje_list = []
@@ -121,7 +76,7 @@ def deferredRevenue():
         if not dr_exist:
             # last_posting_date = date(year=2023,month=1,day=31)
             # next_date = getNextDate(last_posting_date)
-            today = date.today()
+            today = import_datetime.date()
             first_day_this_month = today.replace(day=1)
             # Calculate the last day of the previous month
             last_day_last_month = first_day_this_month - timedelta(days=1)
@@ -194,7 +149,7 @@ def deferredRevenue():
         # doAddtoNewDJE(deferred,dje_list)
         # print('-----update list-----')
         # print(update_list)
-        doAddtoNewDJE(deferred,update_list)
+        doAddtoNewDJE(deferred,update_list,import_datetime)
         
         # print('update')
         # for p in update_list:
@@ -206,7 +161,7 @@ def deferredRevenue():
         #     # print('------...----',doc.name)
         #     doCreateJEAonLastMonthJE(date_put,new_list)
         #     print('8) done put new created to last month je')
-        createDeferredAccountingEntries(deferred,tag_id)
+        createDeferredAccountingEntries(deferred,tag_id,import_datetime)
 
 def getNextDate(dates):
     if isinstance(dates, str):
@@ -308,8 +263,8 @@ def sendEmail(msg,subject,doctype,name):
     }
     frappe.enqueue(method=frappe.sendmail, queue='short',timeout='300',**email_args)
 
-def getLastMonthName(f1):
-    now = datetime.now()
+def getLastMonthName(f1,datetime):
+    now = datetime
     year = now.year
     if now.month == 1:
         month = 12
@@ -649,11 +604,11 @@ def doLogicDeferred2(dje_list):
     return new_list
 
 
-def doAddtoNewDJE(deferred,dje_list):
+def doAddtoNewDJE(deferred,dje_list,import_datetime):
     # print('updated list')
     # try:
     # print('dje list: ',dje_list)
-    now = datetime.now().date()
+    now = import_datetime.date()
     posting_date = dje_list[0]['posting_date']
     for row in dje_list:
         deferred.append('accounts',row)
@@ -733,8 +688,8 @@ def getJEALastDR(yearMonth):
     return dr_exist, rows_list, last_posting_date
 
 # def createDeferredAccountingEntries(journal,new_date):
-def createDeferredAccountingEntries(deferred,tag_id):
-    today = date.today()
+def createDeferredAccountingEntries(deferred,tag_id,import_datetime):
+    today = import_datetime.date()
     first_day_this_month = today.replace(day=1)
     deferredje = frappe.new_doc('Journal Entry')
     deferredje.report_type = 'Deferred Revenue'
@@ -872,15 +827,3 @@ def createDeferredAccountingEntries(deferred,tag_id):
     frappe.db.commit()
     print('Done Create DR je')
   
-
-
-
-    
-
-
-
-
-
-
-
-
