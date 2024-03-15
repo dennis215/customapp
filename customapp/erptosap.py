@@ -590,16 +590,7 @@ def createCSVExport(value,filename,path):
     print(csv_string)
     uploadToFtpServer(csv_string,filename,path)
 
-def getExportFilename(report):
-    filename = ''
-    if report == 1:
-        filename += 'BRAINSCOLL'
-    elif report == 2:
-        filename += 'BRAINSDEF'
-    elif report == 3:
-        filename += 'BRAINSBILL'
-
-    # now = datetime.now()
+def getFilenameDateString():
     now = frappe.utils.now_datetime()
     year = str(now.year)
     month = str(now.month)
@@ -610,11 +601,21 @@ def getExportFilename(report):
         day = '0'+day
     hour = str(now.hour)
     minute = str(now.minute)
+    dateString=  year+month+day+hour+minute
+    return dateString
 
-    filename += year+month+day+hour+minute
-    print('hour: ',hour)
-    print('minute: ',minute)
-    print('now: ',now)
+    
+def getExportFilename(report):
+    filename = ''
+    if report == 1:
+        filename += 'BSCOLL'
+    elif report == 2:
+        filename += 'BSDEF'
+    elif report == 3:
+        filename += 'BSBILL'
+
+    # now = datetime.now()
+    filename +=getFilenameDateString()
     print('filename: ',filename)
 
     return filename
@@ -630,6 +631,7 @@ def exportCRReportToSAP():
             filename = getExportFilename(1)
         else:
             filename = scheduler.report_name
+            filename += getFilenameDateString()
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
@@ -748,6 +750,7 @@ def exportDRReportToSAP():
             filename = getExportFilename(2)
         else:
             filename = scheduler.report_name
+            filename += getFilenameDateString()
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
@@ -857,6 +860,7 @@ def exportBRReportToSAP():
             filename = getExportFilename(3)
         else:
             filename = scheduler.report_name
+            filename += getFilenameDateString()
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
@@ -993,6 +997,7 @@ def exportJBCRReportToSAP():
             filename = getExportFilename(1)
         else:
             filename = scheduler.report_name
+            filename += getFilenameDateString()
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
@@ -1111,6 +1116,7 @@ def exportJBBRReportToSAP():
             filename = getExportFilename(3)
         else:
             filename = scheduler.report_name
+            filename += getFilenameDateString()
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
