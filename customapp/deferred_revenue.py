@@ -681,7 +681,7 @@ def getJEALastDR(yearMonth):
                 'current_month':row.current_month,
                 'revenue_account':row.revenue_account,
                 'journal_entry':row.journal_entry,
-                'new_cost_center':row.new_cost_center
+                # 'new_cost_center':row.new_cost_center
             }
             rows_list.append(acc_dict)
     
