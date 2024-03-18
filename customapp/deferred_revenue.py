@@ -367,6 +367,9 @@ def getRowLastJE(posting_date):
     # print(data)
     # for row in data_entries_list:
     #     print(row['month_count'])
+    for row in data_entries_list:
+        print("rowhererowhererowhererowhererowhererowhererowhererowhererowhere")
+        print(row)
     return je_exist,data_entries_list, doc.tag_id
 
 def doCreateJEAonLastMonthJE(date_put, new_list):
