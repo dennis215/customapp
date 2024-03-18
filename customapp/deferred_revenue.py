@@ -332,6 +332,8 @@ def getRowLastJE(posting_date):
     data_entries_list = []
     for row in flat_account_entries_list:
     # row = account_entries_list[0]
+        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+        print("row.revenue_account",row.revenue_account)
         if row.month_count <=1 and row.revenue_account is not None:
             pass
         else:
