@@ -334,7 +334,9 @@ def getRowLastJE(posting_date):
     # row = account_entries_list[0]
         print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         print("row.revenue_account",row.revenue_account)
-        if row.month_count <=1 and row.revenue_account != '':
+        if row.revenue_account == '':
+            print("passing this")
+        if row.month_count <=1 and row.revenue_account == '':
             pass
         else:
             data = {
