@@ -332,14 +332,8 @@ def getRowLastJE(posting_date):
     data_entries_list = []
     for row in flat_account_entries_list:
     # row = account_entries_list[0]
-        print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
         print("row.revenue_account",row.revenue_account)
-        if row.revenue_account == '':
-            print("passing this")
-        if row.month_count <=1 and row.revenue_account == '':
-            print("passing this confirm")
-            pass
-        else:
+        if row.month_count >1 and row.revenue_account != '':
             data = {
                 'account':row.account,
                 'account_number':row.account_number,
@@ -364,13 +358,12 @@ def getRowLastJE(posting_date):
                 'journal_entry':doc.name
             }
             data_entries_list.append(data)
+        else:
+            pass
     # print('data')
     # print(data)
     # for row in data_entries_list:
     #     print(row['month_count'])
-    for row in data_entries_list:
-        print("rowhererowhererowhererowhererowhererowhererowhererowhererowhere")
-        print(row)
     return je_exist,data_entries_list, doc.tag_id
 
 def doCreateJEAonLastMonthJE(date_put, new_list):
