@@ -355,7 +355,8 @@ def getRowLastJE(posting_date):
                 'current_month':row.current_month,
                 'revenue_account':row.revenue_account,
                 'new_cost_center':row.new_cost_center,
-                'journal_entry':doc.name
+                'journal_entry':doc.name,
+                'joint_string':row.joint_string
             }
             data_entries_list.append(data)
         else:
@@ -682,6 +683,7 @@ def getJEALastDR(yearMonth):
                 'current_month':row.current_month,
                 'revenue_account':row.revenue_account,
                 'journal_entry':row.journal_entry,
+                'joint_string':row.joint_string
                 # 'new_cost_center':row.new_cost_center
             }
             rows_list.append(acc_dict)
@@ -753,7 +755,8 @@ def createDeferredAccountingEntries(deferred,tag_id,import_datetime):
                     'month_count':row.month_count,
                     'current_month':row.current_month,
                     'revenue_account':row.revenue_account,
-                    'journal_entry':row.journal_entry
+                    'journal_entry':row.journal_entry,
+                    'joint_string':row.joint_string
                 }
                 dr.append(rows_dict)
             elif counter == 2:
@@ -782,7 +785,8 @@ def createDeferredAccountingEntries(deferred,tag_id,import_datetime):
                     'month_count':row.month_count,
                     'current_month':row.current_month,
                     'revenue_account':row.revenue_account,
-                    'journal_entry':row.journal_entry
+                    'journal_entry':row.journal_entry,
+                    'joint_string':row.joint_string
                 }
                 dr.append(rows_dict)
         
