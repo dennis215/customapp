@@ -31,6 +31,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'group':a.group,
                     'posting_date':a.posting_date,
                     'is_jb':a.is_jb,
+                    'joint_string':a.joint_string,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
                 }
             else:
@@ -51,6 +52,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'month_count':a.month_count,
                     'current_month':a.current_month,
                     'is_jb':a.is_jb,
+                    'joint_string':a.joint_string,
                 }
             if tag:
                 row['tag_id'] = tag_id
@@ -72,6 +74,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'posting_date':a.posting_date,
                     'is_jb':a.is_jb,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
+                    'joint_string':a.joint_string,
                 }
             else:
                 row = {
@@ -91,6 +94,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'month_count':a.month_count,
                     'current_month':a.current_month,
                     'is_jb':a.is_jb,
+                    'joint_string':a.joint_string,
                 }
             if tag:
                 row['tag_id'] = tag_id
@@ -700,7 +704,7 @@ def exportCRReportToSAP():
         # Sum up credit and debit
         cumulative_sums = {}
         for entry in combined_array:
-            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'])
+            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
                 cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'tag_id': entry['tag_id'],'profit_or_cost_center_number':entry['profit_or_cost_center_number']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
@@ -942,7 +946,7 @@ def exportBRReportToSAP():
         # Sum up credit and debit
         cumulative_sums = {}
         for entry in combined_array:
-            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'])
+            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
                 cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
@@ -1066,7 +1070,7 @@ def exportJBCRReportToSAP():
         # Sum up credit and debit
         cumulative_sums = {}
         for entry in combined_array:
-            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'])
+            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
                 cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'tag_id': entry['tag_id'],'profit_or_cost_center_number':entry['profit_or_cost_center_number']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
@@ -1198,7 +1202,7 @@ def exportJBBRReportToSAP():
         # Sum up credit and debit
         cumulative_sums = {}
         for entry in combined_array:
-            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'])
+            key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
                 cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
