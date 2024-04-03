@@ -280,6 +280,7 @@ def makeDict(row,counter):
         'month_count': row[37],
         'current_month': row[38],
         'is_jb': 1 if row[41] else 0,
+        'joint_string': row[42],
     }
     try:
         dicts['revenue_account'] = row[39]
@@ -867,10 +868,11 @@ def makeDict2(row,counter,isCollection):
             'remark': row[23],
             'posting_date': row[30],
             'group': row[31],
-            'is_jb': 1 if row[33] else 0,
+            'is_jb': 1 if row[34] else 0,
+            'joint_string': row[35],
         }
         try:
-            dicts['profit_or_cost_center_number'] = row[34]
+            dicts['profit_or_cost_center_number'] = row[33]
         except:
             pass
     else:
@@ -892,6 +894,7 @@ def makeDict2(row,counter,isCollection):
             'month_count': row[37],
             'current_month': row[38],
             'is_jb': 1 if row[41] else 0,
+            'joint_string': row[42],
         }
     try:
         dicts['revenue_account'] = row[39]
