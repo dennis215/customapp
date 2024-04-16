@@ -5,9 +5,10 @@ from frappe.utils.csvutils import UnicodeWriter
 from frappe.utils import cstr
 from ftplib import FTP
 import io
+import pytz
 
-def getRow(accounts,row_list,tag_id,isCollection):
-    current_datetime=getDateTimeString()
+def getRow(accounts,row_list,tag_id,isCollection,posting_dateTime):
+    dateTime = posting_dateTime.strftime("%y%m%d%H%M")
     tag = True
     counter = 1
     for a in accounts:
@@ -27,9 +28,9 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'cost_center_number':a.cost_center_number,
                     'currency':a.currency,
                     'debit':a.debit_in_account_currency,
-                    'remark':a.remark,
+                    'remark':a.remark +" / "+dateTime,
                     'group':a.group,
-                    'posting_date':a.posting_date,
+                    'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
                     'is_jb':a.is_jb,
                     'joint_string':a.joint_string,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
@@ -43,7 +44,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'debit':a.debit_in_account_currency,
                     'remark':a.remark,
                     'group':a.group,
-                    'posting_date':a.posting_date,
+                    'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
                     'tax_amount':a.tax_amount,
                     'tax_code':a.tax_code,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
@@ -69,9 +70,9 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'cost_center_number':a.cost_center_number,
                     'currency':a.currency,
                     'credit':a.credit_in_account_currency,
-                    'remark':a.remark,
+                    'remark':a.remark +" / "+dateTime,
                     'group':a.group,
-                    'posting_date':a.posting_date,
+                    'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
                     'is_jb':a.is_jb,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
                     'joint_string':a.joint_string,
@@ -85,7 +86,7 @@ def getRow(accounts,row_list,tag_id,isCollection):
                     'credit':a.credit_in_account_currency,
                     'remark':a.remark,
                     'group':a.group,
-                    'posting_date':a.posting_date,
+                    'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
                     'tax_amount':a.tax_amount,  
                     'tax_code':a.tax_code,
                     'profit_or_cost_center_number':a.profit_or_cost_center_number,
@@ -643,6 +644,7 @@ def exportCRReportToSAP():
         periodic = scheduler.periodic
 
         if periodic == 'Daily':
+            posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','is_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
@@ -650,15 +652,10 @@ def exportCRReportToSAP():
                 print('No Collection Report is available to be exported!')
                 return
         elif periodic == 'Month End':
-            #enable in Staging [1]
-            # now = datetime.now()
-            # month = now.month
-            # months = str(month)
-            # if len(str(month)) < 2:
-                # months = '0'+str(month)
-            # month_filter = '%-'+months+'-%'
-            #end of enable [1]
-
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
+                                      current_date.month + 1 if current_date.month < 12 else 1,
+                                      1, 0, 0, 0)
             #disable in Staging [2]
             last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','is_exported':'0','docstatus':'1'})
             month = last_journal.posting_date.month
@@ -685,7 +682,7 @@ def exportCRReportToSAP():
             tag_id = j.tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,1)
+            getRow(accounts,row_list,tag_id,1,posting_datetime)
             row_lists.append(row_list)
         
         if len(journal_list) <= 0:
@@ -747,7 +744,6 @@ def exportCRReportToSAP():
     except Exception as e:
         print('error: ',e)
        
-@frappe.whitelist(allow_guest=True)
 def exportDRReportToSAP():
     print('--export Deferred Revenue----')
     try:
@@ -873,6 +869,7 @@ def exportBRReportToSAP():
         names = []
 
         if periodic == 'Daily':
+            posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
@@ -881,6 +878,10 @@ def exportBRReportToSAP():
                 print('No Billing Journal Entry available to be exported!')
                 return
         elif periodic == 'Month End':
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
+                                      current_date.month + 1 if current_date.month < 12 else 1,
+                                      1, 0, 0, 0)
             #enable in Staging [1]
             # now = datetime.now()
             # month = now.month
@@ -916,7 +917,7 @@ def exportBRReportToSAP():
             tag_id = j.tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,0)
+            getRow(accounts,row_list,tag_id,0,posting_datetime)
             row_lists.append(row_list)  
         # print('len journals: ',len(names))
         # print(names)
@@ -1009,6 +1010,7 @@ def exportJBCRReportToSAP():
         periodic = scheduler.periodic
 
         if periodic == 'Daily':
+            posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','is_jb_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
@@ -1016,6 +1018,10 @@ def exportJBCRReportToSAP():
                 print('No Collection Report JB is available to be exported!')
                 return
         elif periodic == 'Month End':
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
+                                      current_date.month + 1 if current_date.month < 12 else 1,
+                                      1, 0, 0, 0)
             #enable in Staging [1]
             # now = datetime.now()
             # month = now.month
@@ -1051,7 +1057,7 @@ def exportJBCRReportToSAP():
             tag_id = j.tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,1)
+            getRow(accounts,row_list,tag_id,1,posting_datetime)
             row_lists.append(row_list)
         
         if len(journal_list) <= 0:
@@ -1129,6 +1135,7 @@ def exportJBBRReportToSAP():
         names = []
 
         if periodic == 'Daily':
+            posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_jb_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
@@ -1137,6 +1144,10 @@ def exportJBBRReportToSAP():
                 print('No Billing Journal JB Entry available to be exported!')
                 return
         elif periodic == 'Month End':
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
+                                      current_date.month + 1 if current_date.month < 12 else 1,
+                                      1, 0, 0, 0)
             #enable in Staging [1]
             # now = datetime.now()
             # month = now.month
@@ -1172,7 +1183,7 @@ def exportJBBRReportToSAP():
             tag_id = j.tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,0)
+            getRow(accounts,row_list,tag_id,0,posting_datetime)
             row_lists.append(row_list)  
         # print('len journals: ',len(names))
         # print(names)
