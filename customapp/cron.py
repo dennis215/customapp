@@ -574,11 +574,14 @@ def doImportCollectionReport():
     response = requests.request("POST", getFileReqUrl,headers=headers,json=getFileData, verify=False)  
     print(" this is res",response)
     if response.status_code == 200:
+	print("res = 200")
         zip = response.content
         zip_file = zipfile.ZipFile(io.BytesIO(zip))
         file_list = zip_file.namelist()
+	print("file_list",file_list)
         for file in file_list:
             if file in file_list:
+		print("file",file)
                 cr_dict,cr = getCr2_pass_file(zip_file,file,1)
                 split = file.split('_')
                 fileDate = split[2].split('.')[0]
