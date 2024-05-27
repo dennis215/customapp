@@ -459,7 +459,7 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
         # if deffered_list:
         #     prev_date = getPreviousDate(new_date)
         #     print('previous_date: ',prev_date)
-        #     deferred = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'tag_id':prev_date})
+        #     deferred = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'custom_tag_id':prev_date})
         #     last_dje = deferred.accounts
         
         # for row in last_dje:
@@ -478,7 +478,7 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
         #         journal.append('deferred_accounts',row)
         #         print('dididid')
         
-        # new_date = datetime.strptime(tag_id_str,'%Y-%m-%d').date()
+        # new_date = datetime.strptime(custom_tag_id_str,'%Y-%m-%d').date()
         # journal.posting_date = new_date
         # try:
         #     doc_name = 'Billing - '+new_date.strftime('%Y-%m-%d')
@@ -633,18 +633,18 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
         # for row in updatelist:
         #     drje.append('accounts',row)
         
-        # print('drje--------------------------: ',tag_id_str)
-        # drje.posting_date = tag_id_str
-        # drje.tag_id = tag_id_str
-        # drje.doc_name = tag_id_str
+        # print('drje--------------------------: ',custom_tag_id_str)
+        # drje.posting_date = custom_tag_id_str
+        # drje.custom_tag_id = custom_tag_id_str
+        # drje.doc_name = custom_tag_id_str
         # drje.save()
         # drje.submit()
         # drje_name =drje.name
 
         # domains = domain + '/app/deferred-revenue-journal-entry/'+ drje_name
-        # error_link = "<a href='"+domains+"' target='_blank'>Deferred Revenue Journal Entry "+tag_id_str+"</a>"
-        # msg = 'A deferred revenue journal entry has been made for Billing Report '+tag_id_str+'. Please see here '+error_link
-        # title = 'ERPNext: Deferred Revenue Journal Entry '+tag_id_str
+        # error_link = "<a href='"+domains+"' target='_blank'>Deferred Revenue Journal Entry "+custom_tag_id_str+"</a>"
+        # msg = 'A deferred revenue journal entry has been made for Billing Report '+custom_tag_id_str+'. Please see here '+error_link
+        # title = 'ERPNext: Deferred Revenue Journal Entry '+custom_tag_id_str
         # sendEmail(msg,title,drje.doctype,drje.name)
 
 
@@ -737,14 +737,14 @@ def doImportBillingReport():
         #     'journal_entry':je_name,
         # })
         
-# def checkExist(tag_id):
+# def checkExist(custom_tag_id):
 #     try:
-#         print('tag_id: ',tag_id)
-#         je = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing','tag_id':tag_id})
+#         print('custom_tag_id: ',custom_tag_id)
+#         je = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':custom_tag_id})
 #         # domain = 'http://127.0.0.1:8000' + '/app/journal-entry/'+ je.name
 #         # domain = 'http://175.136.236.153:8003' + '/app/journal-entry/'+ je_name
 #         domains = domain + '/app/journal-entry/'+ je.name
-#         journal_link = "<a href='"+domains+"' target='_blank'>Billing Journal Entry "+tag_id+"</a>"
+#         journal_link = "<a href='"+domains+"' target='_blank'>Billing Journal Entry "+custom_tag_id+"</a>"
 #         print('exist: true')
 #         return True, je.name
 #     except:
@@ -2121,9 +2121,9 @@ def importfrombs(file,cr_dict):
 #         now = datetime.now().strftime('%Y-%m-%d')
 #         # new_date = datetime.strptime(now, '%Y-%m-%d').date() + timedelta(days=1)
 #         # journal.posting_date = new_date         # erpnext set date to one day before posting_date, so need to add 1 day to get present date
-#         # tag_id = getDateOnly(dates)
-#         # tag_id_str = tag_id.strftime('%Y-%m-%d')
-#         # journal.tag_id = tag_id
+#         # custom_tag_id = getDateOnly(dates)
+#         # custom_tag_id_str = custom_tag_id.strftime('%Y-%m-%d')
+#         # journal.custom_tag_id = custom_tag_id
 #         journal.save()
 #         journal.submit()
 #         je_name = journal.name
@@ -2320,11 +2320,11 @@ def importfrombs(file,cr_dict):
 #         #     print('month: ',month_num,' day: ',day)
 #         #     latest_posting = date(day=day, month=month_num, year=latest_posting.year)
 #         # journal.posting_date = latest_posting
-#         # journal.tag_id = latest_posting
+#         # journal.custom_tag_id = latest_posting
 #         # print('--------------POSTING DATE: ',posting_date)
 #         # month = getMonth(posting_date)
 #         # year = latest_posting.year
-#         # tag_id = getDatetime(posting_date)
+#         # custom_tag_id = getDatetime(posting_date)
 #         # sch = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing Report'})
 #         # sch = frappe.get_last_doc('random')
 #         # if sch.value == 0:
@@ -2337,22 +2337,22 @@ def importfrombs(file,cr_dict):
 #         #         sch.value = val
 #         #     sch.save()
 #         #     sch.submit()
-#         #     month = tag_id.month + val
-#         #     # tag_id = tag_id.replace(month=tag_id.month+val)
+#         #     month = custom_tag_id.month + val
+#         #     # custom_tag_id = custom_tag_id.replace(month=custom_tag_id.month+val)
 #         #     if month > 12:
 #         #         year+=1
 #         #         month=1
-#         #     days = calendar.monthrange(tag_id.year,month)
-#         #     tag_id = date(day=days[1],month=month,year=year)
+#         #     days = calendar.monthrange(custom_tag_id.year,month)
+#         #     custom_tag_id = date(day=days[1],month=month,year=year)
 
         
 
-#         # tag_id_str = tag_id.strftime('%Y-%m-%d')
-#         # journal.tag_id = tag_id
+#         # custom_tag_id_str = custom_tag_id.strftime('%Y-%m-%d')
+#         # journal.custom_tag_id = custom_tag_id
 #         # journal.save()
 #         # journal.submit()
 #         # company = frappe.get_last_doc('Company',filters={'company_name':journal.company})
-#         # journal.title = journal.report_type + ' - '+month+' '+str(year)
+#         # journal.title = journal.custom_report_type + ' - '+month+' '+str(year)
 #         # journal.title = doc_name
 #         # journal.save()
 #         # journal.submit()
@@ -2362,12 +2362,12 @@ def importfrombs(file,cr_dict):
 #         # domain = 'http://127.0.0.1:8000' + '/app/journal-entry/'+ je_name
 #         # domain = 'http://175.136.236.153:8003' + '/app/journal-entry/'+ je_name
 #         # domains = domain + '/app/journal-entry/'+ je_name
-#         # journal_link = "<a href='"+domains+"' target='_blank'>Billing - "+tag_id_str+"</a>"
+#         # journal_link = "<a href='"+domains+"' target='_blank'>Billing - "+custom_tag_id_str+"</a>"
 #         # # frappe.msgprint('One Journal Entry has been created, See Here ')
 #         # msg = 'A journal entry has been made for Billing Report '+str(posting_date)+'. Please see here '+journal_link
 #         # title = 'ERPNext: Journal Entry '+str(posting_date)
 #         # sendEmail(msg,title,journal.doctype,journal.name)
-#         # return journal, tag_id_str
+#         # return journal, custom_tag_id_str
 #         # dr_list = getDr(new_date)
 #         return journal
 
@@ -2379,9 +2379,9 @@ def createAccountingEntries(journal,cr,end_date):
         # now = datetime.now().strftime('%Y-%m-%d')
         # new_date = datetime.strptime(now, '%Y-%m-%d').date() + timedelta(days=1)
         # journal.posting_date = new_date         # erpnext set date to one day before posting_date, so need to add 1 day to get present date
-        # tag_id = getDateOnly(dates)
-        # tag_id_str = tag_id.strftime('%Y-%m-%d')
-        # journal.tag_id = end_date
+        # custom_tag_id = getDateOnly(dates)
+        # custom_tag_id_str = custom_tag_id.strftime('%Y-%m-%d')
+        # journal.custom_tag_id = end_date
         journal.posting_date = end_date
         je_name = 'Billing - '+str(end_date)
         journal.title = je_name
@@ -2473,14 +2473,14 @@ def createAccountingEntries(journal,cr,end_date):
         # print('--------------POSTING DATE: ',posting_date)
         # month = getMonth(posting_date)
         # year = latest_posting.year
-        # tag_id = getDatetime(posting_date)
+        # custom_tag_id = getDatetime(posting_date)
 
-        # tag_id_str = tag_id.strftime('%Y-%m-%d')
-        # journal.tag_id = tag_id
+        # custom_tag_id_str = custom_tag_id.strftime('%Y-%m-%d')
+        # journal.custom_tag_id = custom_tag_id
         # journal.save()
         # journal.submit()
         # company = frappe.get_last_doc('Company',filters={'company_name':journal.company})
-        # journal.title = journal.report_type + ' - '+month+' '+str(year)
+        # journal.title = journal.custom_report_type + ' - '+month+' '+str(year)
         journal.title = 'Billing - '+str(posting_date)
         # journal.save()
         # journal.submit()
@@ -2488,7 +2488,7 @@ def createAccountingEntries(journal,cr,end_date):
         # print('je_name: ',je_name)
 
         # domains = domain + '/app/journal-entry/'+ je_name
-        # journal_link = "<a href='"+domains+"' target='_blank'>Billing Journal Entry "+tag_id_str+"</a>"
+        # journal_link = "<a href='"+domains+"' target='_blank'>Billing Journal Entry "+custom_tag_id_str+"</a>"
         # # frappe.msgprint('One Journal Entry has been created, See Here ')
         # msg = 'A journal entry has been made for Collection Report '+str(posting_date)+'. Please see here '+journal_link
         # title = 'ERPNext: Journal Entry '+str(posting_date)
@@ -2719,7 +2719,7 @@ def doLogicDeferred(dje_list):
 #     # --------------------find the DR using previous date----------------------------------
 #     # prev_date = getPreviousDate(new_date)
 #     # print('-------prev_date: ',prev_date,' type: ',type(prev_date))
-#     # deferreds = frappe.get_list('Deferred Revenue Journal Entry',filters={'tag_id':prev_date})
+#     # deferreds = frappe.get_list('Deferred Revenue Journal Entry',filters={'custom_tag_id':prev_date})
     
 #     #--------------------find DR using last DR created-------------------------------------
 #     deferreds = getDocList('Deferred Revenue Journal Entry','',True)
@@ -2728,7 +2728,7 @@ def doLogicDeferred(dje_list):
 #         print('No Previous Deferred Revenue Found!')
 #         return
 #     else:
-#         # deferred = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'tag_id':prev_date})
+#         # deferred = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'custom_tag_id':prev_date})
 #         deferred = getDoc('Deferred Revenue Journal Entry','')
 #     acc = deferred.accounts
 #     counter = 1
@@ -2831,15 +2831,15 @@ def doLogicDeferred(dje_list):
 #     # for i in dr:
 #     #     print(i) 
 #     #     print('\n\n')
-#     journal.total_deferred_debit = getRM(total_debit)
-#     journal.total_deferred_credit = getRM(total_credit)
+#     journal.custom_total_deferred_debit = getRM(total_debit)
+#     journal.custom_total_deferred_credit = getRM(total_credit)
 #     print('Done Create ')
   
 # def createJE(cr,new_date):
 #     journal = frappe.new_doc("Journal Entry")
-#     journal.report_type = 'Billing'
+#     journal.custom_report_type = 'Billing'
 #     journal.posting_date = new_date
-#     journal.tag_id = new_date
+#     journal.custom_tag_id = new_date
 #     posting_date = ''
 #     # print('CRRRR')
 #     # print(cr)
@@ -2854,7 +2854,7 @@ def doLogicDeferred(dje_list):
 #     # je_name = journal.name
 #     # domain = 'http://127.0.0.1:8000' + '/app/journal-entry/'+ je_name
 #     # # domain = 'http://175.136.236.153:8003' + '/app/journal-entry/'+ je_name
-#     # journal_link = "<a href='"+domain+"' target='_blank'>Journal Entry "+tag_id_str+"</a>"
+#     # journal_link = "<a href='"+domain+"' target='_blank'>Journal Entry "+custom_tag_id_str+"</a>"
 #     # # frappe.msgprint('One Journal Entry has been created, See Here ')
 #     # msg = 'A journal entry has been made for Collection Report '+str(posting_date)+'. Please see here '+journal_link
 #     # title = 'ERPNext: Journal Entry '+str(posting_date)
@@ -2865,7 +2865,7 @@ def createJE(cr,end_date,batch_id):
     print('=================================================cr======')
     print(cr)
     journal = frappe.new_doc("Journal Entry")
-    journal.report_type = 'Billing'
+    journal.custom_report_type = 'Billing'
     posting_date = ''
     # print('CRRRR')
     # print(cr)
@@ -2877,12 +2877,12 @@ def createJE(cr,end_date,batch_id):
     # createDeferredAccountingEntries(journal,end_date)
     # journal.save()
     # print('batchid je: ',batch_id)
-    journal.tag_id = batch_id
+    journal.custom_tag_id = batch_id
     journal.save()
     journal.submit()
     frappe.db.commit()
 
-    # print('batchid after save: ',journal.tag_id)
+    # print('batchid after save: ',journal.custom_tag_id)
     # createDeferredAccountingEntries(journal,date(year=2023,month=2,day=28))
     # createBillingAccountingEntries(journal)
     # dates = cr[0][30]

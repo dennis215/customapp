@@ -313,9 +313,9 @@ def createAccountingEntries(journal,cr,end_date):
         # now = datetime.now().strftime('%Y-%m-%d')
         # new_date = datetime.strptime(now, '%Y-%m-%d').date() + timedelta(days=1)
         # journal.posting_date = new_date         # erpnext set date to one day before posting_date, so need to add 1 day to get present date
-        # tag_id = getDateOnly(dates)
-        # tag_id_str = tag_id.strftime('%Y-%m-%d')
-        # journal.tag_id = end_date
+        # custom_tag_id = getDateOnly(dates)
+        # custom_tag_id_str = custom_tag_id.strftime('%Y-%m-%d')
+        # journal.custom_tag_id = end_date
         journal.posting_date = end_date
         je_name = 'Collection - '+str(end_date)
         journal.title = je_name
@@ -381,14 +381,14 @@ def createAccountingEntries(journal,cr,end_date):
         # print('--------------POSTING DATE: ',posting_date)
         # month = getMonth(posting_date)
         # year = latest_posting.year
-        # tag_id = getDatetime(posting_date)
+        # custom_tag_id = getDatetime(posting_date)
 
-        # tag_id_str = tag_id.strftime('%Y-%m-%d')
-        # journal.tag_id = tag_id
+        # custom_tag_id_str = custom_tag_id.strftime('%Y-%m-%d')
+        # journal.custom_tag_id = custom_tag_id
         # journal.save()
         # journal.submit()
         # company = frappe.get_last_doc('Company',filters={'company_name':journal.company})
-        # journal.title = journal.report_type + ' - '+month+' '+str(year)
+        # journal.title = journal.custom_report_type + ' - '+month+' '+str(year)
         journal.title = 'Collection - '+str(posting_date)
         # journal.save()
         # journal.submit()
@@ -396,7 +396,7 @@ def createAccountingEntries(journal,cr,end_date):
         # print('je_name: ',je_name)
 
         # domains = domain + '/app/journal-entry/'+ je_name
-        # journal_link = "<a href='"+domains+"' target='_blank'>Billing Journal Entry "+tag_id_str+"</a>"
+        # journal_link = "<a href='"+domains+"' target='_blank'>Billing Journal Entry "+custom_tag_id_str+"</a>"
         # # frappe.msgprint('One Journal Entry has been created, See Here ')
         # msg = 'A journal entry has been made for Collection Report '+str(posting_date)+'. Please see here '+journal_link
         # title = 'ERPNext: Journal Entry '+str(posting_date)
@@ -406,7 +406,7 @@ def createJE(cr,end_date,batch_id):
     print('=================================================cr======')
     print(cr)
     journal = frappe.new_doc("Journal Entry")
-    journal.report_type = 'Collection'
+    journal.custom_report_type = 'Collection'
     posting_date = ''
     # print('CRRRR')
     # print(cr)
@@ -418,19 +418,19 @@ def createJE(cr,end_date,batch_id):
     # createDeferredAccountingEntries(journal,end_date)
     journal.save()
     # print('batchid je: ',batch_id)
-    journal.tag_id = batch_id
+    journal.custom_tag_id = batch_id
     journal.save()
     journal.submit()
     frappe.db.commit()
 
 
 def getNewDate():
-    docs = frappe.get_list('Journal Entry',filters={'report_type':'Collection'})
+    docs = frappe.get_list('Journal Entry',filters={'custom_report_type':'Collection'})
     if docs:
-        doc = frappe.get_last_doc('Journal Entry',filters={'report_type':'Collection'})
-        tag_id = doc.tag_id
-        month = tag_id.month
-        year = tag_id.year
+        doc = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Collection'})
+        custom_tag_id = doc.custom_tag_id
+        month = custom_tag_id.month
+        year = custom_tag_id.year
         month+=1
         if month==13:
             month = 1
@@ -537,20 +537,20 @@ def checkJEExist(start_date, end_date):
     #     raise Exception('Start Date and End Date Must Be In The Same Year')
     if start_date == end_date:
         try:
-            je = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','tag_id':start_date})
+            je = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_tag_id':start_date})
             print('START DATE: ',start_date)
-            tag_id = je.tag_id.strftime('%Y-%m-%d')
+            custom_tag_id = je.custom_tag_id.strftime('%Y-%m-%d')
             # domain = 'http://127.0.0.1:8000' + '/app/journal-entry/'+ je.name
             # domain = 'http://175.136.236.153:8003' + '/app/journal-entry/'+ je.name
             domains = domain + '/app/journal-entry/'+ je.name
-            journal_link = "<a href='"+domains+"' target='_blank'>Journal Entry "+tag_id+"</a>"
+            journal_link = "<a href='"+domains+"' target='_blank'>Journal Entry "+custom_tag_id+"</a>"
             journal_link_list.append(journal_link)
             # frappe.throw('Journal Entry already exist!')
             return True, journal_link_list
             # raise Exception('Journal Entry already existgfgth!')
         except:
             # report_exist.append(str(start_date))
-            tag_id = start_date.strftime('%Y-%m-%d')
+            custom_tag_id = start_date.strftime('%Y-%m-%d')
             return False,''
 
 # @frappe.whitelist(allow_guest=True)

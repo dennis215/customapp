@@ -7,7 +7,7 @@ from ftplib import FTP
 import io
 import pytz
 
-def getRow(accounts,row_list,tag_id,isCollection,posting_dateTime):
+def getRow(accounts,row_list,custom_tag_id,isCollection,posting_dateTime):
     dateTime = posting_dateTime.strftime("%y%m%d%H%M")
     tag = True
     counter = 1
@@ -23,40 +23,40 @@ def getRow(accounts,row_list,tag_id,isCollection,posting_dateTime):
         if counter == 1:
             if isCollection:
                 row = {
-                    'year':a.year,
-                    'account_number':a.account_number,
-                    'cost_center_number':a.cost_center_number,
-                    'currency':a.currency,
+                    'year':a.custom_year,
+                    'account_number':a.custom_account_number,
+                    'cost_center_number':a.custom_cost_center_number,
+                    'currency':a.custom_currency,
                     'debit':a.debit_in_account_currency,
-                    'remark':a.remark +" / "+dateTime,
-                    'group':a.group,
+                    'remark':a.custom_remark +" / "+dateTime,
+                    'group':a.custom_group,
                     'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
-                    'is_jb':a.is_jb,
-                    'joint_string':a.joint_string,
-                    'profit_or_cost_center_number':a.profit_or_cost_center_number,
+                    'is_jb':a.custom_is_jb,
+                    'joint_string':a.custom_joint_string,
+                    'profit_or_cost_center_number':a.custom_profit_or_cost_center_number,
                 }
             else:
                 row = {
-                    'year':a.year,
-                    'account_number':a.account_number,
-                    'cost_center_number':a.cost_center_number,
-                    'currency':a.currency,
+                    'year':a.custom_year,
+                    'account_number':a.custom_account_number,
+                    'cost_center_number':a.custom_cost_center_number,
+                    'currency':a.custom_currency,
                     'debit':a.debit_in_account_currency,
-                    'remark':a.remark,
-                    'group':a.group,
+                    'remark':a.custom_remark,
+                    'group':a.custom_group,
                     'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
-                    'tax_amount':a.tax_amount,
-                    'tax_code':a.tax_code,
-                    'profit_or_cost_center_number':a.profit_or_cost_center_number,
-                    'san_count':a.san_count,
-                    'monthly_charge':a.monthly_charge,
-                    'month_count':a.month_count,
-                    'current_month':a.current_month,
-                    'is_jb':a.is_jb,
-                    'joint_string':a.joint_string,
+                    'tax_amount':a.custom_tax_amount,
+                    'tax_code':a.custom_tax_code,
+                    'profit_or_cost_center_number':a.custom_profit_or_cost_center_number,
+                    'san_count':a.custom_san_count,
+                    'monthly_charge':a.custom_monthly_charge,
+                    'month_count':a.custom_month_count,
+                    'current_month':a.custom_current_month,
+                    'is_jb':a.custom_is_jb,
+                    'joint_string':a.custom_joint_string,
                 }
             if tag:
-                row['tag_id'] = tag_id
+                row['custom_tag_id'] = custom_tag_id
             print('----------debit-----------------')
             print(row)
             # print('row 1: ',row)
@@ -65,40 +65,40 @@ def getRow(accounts,row_list,tag_id,isCollection,posting_dateTime):
         elif counter == 2:
             if isCollection:
                 row = {
-                    'year':a.year,
-                    'account_number':a.account_number,
-                    'cost_center_number':a.cost_center_number,
-                    'currency':a.currency,
+                    'year':a.custom_year,
+                    'account_number':a.custom_account_number,
+                    'cost_center_number':a.custom_cost_center_number,
+                    'currency':a.custom_currency,
                     'credit':a.credit_in_account_currency,
-                    'remark':a.remark +" / "+dateTime,
-                    'group':a.group,
+                    'remark':a.custom_remark +" / "+dateTime,
+                    'group':a.custom_group,
                     'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
-                    'is_jb':a.is_jb,
-                    'profit_or_cost_center_number':a.profit_or_cost_center_number,
-                    'joint_string':a.joint_string,
+                    'is_jb':a.custom_is_jb,
+                    'profit_or_cost_center_number':a.custom_profit_or_cost_center_number,
+                    'joint_string':a.custom_joint_string,
                 }
             else:
                 row = {
-                    'year':a.year,
-                    'account_number':a.account_number,
-                    'cost_center_number':a.cost_center_number,
-                    'currency':a.currency,
+                    'year':a.custom_year,
+                    'account_number':a.custom_account_number,
+                    'cost_center_number':a.custom_cost_center_number,
+                    'currency':a.custom_currency,
                     'credit':a.credit_in_account_currency,
-                    'remark':a.remark,
-                    'group':a.group,
+                    'remark':a.custom_remark,
+                    'group':a.custom_group,
                     'posting_date':date(posting_dateTime.year, posting_dateTime.month, posting_dateTime.day),
-                    'tax_amount':a.tax_amount,  
-                    'tax_code':a.tax_code,
-                    'profit_or_cost_center_number':a.profit_or_cost_center_number,
-                    'san_count':a.san_count,
-                    'monthly_charge':a.monthly_charge,
-                    'month_count':a.month_count,
-                    'current_month':a.current_month,
-                    'is_jb':a.is_jb,
-                    'joint_string':a.joint_string,
+                    'tax_amount':a.custom_tax_amount,  
+                    'tax_code':a.custom_tax_code,
+                    'profit_or_cost_center_number':a.custom_profit_or_cost_center_number,
+                    'san_count':a.custom_san_count,
+                    'monthly_charge':a.custom_monthly_charge,
+                    'month_count':a.custom_month_count,
+                    'current_month':a.custom_current_month,
+                    'is_jb':a.custom_is_jb,
+                    'joint_string':a.custom_joint_string,
                 }
             if tag:
-                row['tag_id'] = tag_id
+                row['custom_tag_id'] = custom_tag_id
             # print('row 2: ',row)
             print('----------credit-----------------')
             print(row)
@@ -152,10 +152,10 @@ def getVal(row,counter):
     # tag = True
     # if tag:
     #     if counter == 1:
-    #         val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+    #         val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['custom_tag_id'])
     #         # print('val 1: ',val)
     #     else:
-    #         val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+    #         val = (str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['custom_tag_id'])
     
     return val
 
@@ -172,10 +172,10 @@ def getValDeferred(row,isDebit):
     # tag = True
     # if tag:
     #     if counter == 1:
-    #         val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+    #         val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','',getAmount(row['debit']),'','',getAmount(row['debit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['custom_tag_id'])
     #         # print('val 1: ',val)
     #     else:
-    #         val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['tag_id'])
+    #         val = ('',str(row['year']),str(row['account_number']),str(row['cost_center_number']),'','','','','','','','',str(row['currency']),'','','-'+getAmount(row['credit']),'','','-'+getAmount(row['credit']),'','','',row['remark'],'','','','','','',row['posting_date'],row['group'],row['custom_tag_id'])
 
 @frappe.whitelist(allow_guest=True)
 def exportCR():
@@ -195,12 +195,12 @@ def exportCR():
 
         much = False
         if start_date == end_date:
-            journal = frappe.get_last_doc('Journal Entry',filters={'tag_id':start_date})
-            tag_id = journal.tag_id
+            journal = frappe.get_last_doc('Journal Entry',filters={'custom_tag_id':start_date})
+            custom_tag_id = journal.custom_tag_id
             accounts = journal.accounts
             # print('accounts: ',accounts)
             row_list = []
-            getRow(accounts,row_list,tag_id,1)
+            getRow(accounts,row_list,custom_tag_id,1)
 
             writer = UnicodeWriter()
             counter = 1
@@ -223,20 +223,20 @@ def exportCR():
             row_list = []
 
             # the first date
-            journal = frappe.get_last_doc('Journal Entry',filters={'tag_id':start_date})
+            journal = frappe.get_last_doc('Journal Entry',filters={'custom_tag_id':start_date})
             accounts = journal.accounts
-            tag_id = journal.tag_id
+            custom_tag_id = journal.custom_tag_id
             # print('accounts: ',accounts)
-            getRow(accounts,row_list,tag_id,1)
+            getRow(accounts,row_list,custom_tag_id,1)
 
             # rest of the date
             for i in range(days):
                 start_date += timedelta(days=1)
-                journal = frappe.get_last_doc('Journal Entry',filters={'tag_id':start_date})
-                tag_id = journal.tag_id
+                journal = frappe.get_last_doc('Journal Entry',filters={'custom_tag_id':start_date})
+                custom_tag_id = journal.custom_tag_id
                 accounts = journal.accounts
                 # print('accounts: ',accounts)
-                getRow(accounts,row_list,tag_id,1)
+                getRow(accounts,row_list,custom_tag_id,1)
             
             # print('ROW LIST: ',row_list)
             print('length: ',len(row_list))
@@ -277,12 +277,12 @@ def exportgetCR():
 
         much = False
         if start_date == end_date:
-            journal = frappe.get_last_doc('Journal Entry',filters={'tag_id':start_date})
+            journal = frappe.get_last_doc('Journal Entry',filters={'custom_tag_id':start_date})
             accounts = journal.accounts
-            tag_id = journal.tag_id
+            custom_tag_id = journal.custom_tag_id
             # print('accounts: ',accounts)
             row_list = []
-            getRow(accounts,row_list,tag_id,1)
+            getRow(accounts,row_list,custom_tag_id,1)
 
             writer = UnicodeWriter()
             counter = 1
@@ -306,20 +306,20 @@ def exportgetCR():
             row_list = []
 
             # the first date
-            journal = frappe.get_last_doc('Journal Entry',filters={'tag_id':start_date})
+            journal = frappe.get_last_doc('Journal Entry',filters={'custom_tag_id':start_date})
             accounts = journal.accounts
-            tag_id = journal.tag_id
+            custom_tag_id = journal.custom_tag_id
             # print('accounts: ',accounts)
-            getRow(accounts,row_list,tag_id,1)
+            getRow(accounts,row_list,custom_tag_id,1)
 
             # rest of the date
             for i in range(days):
                 start_date += timedelta(days=1)
-                journal = frappe.get_last_doc('Journal Entry',filters={'tag_id':start_date})
+                journal = frappe.get_last_doc('Journal Entry',filters={'custom_tag_id':start_date})
                 accounts = journal.accounts
-                tag_id = journal.tag_id
+                custom_tag_id = journal.custom_tag_id
                 # print('accounts: ',accounts)
-                getRow(accounts,row_list,tag_id,1)
+                getRow(accounts,row_list,custom_tag_id,1)
             
             # print('ROW LIST: ',row_list)
             print('length: ',len(row_list))
@@ -347,9 +347,9 @@ def exportgetCR():
 # ------------------------------------------export deferred---------------------------------------------         
 
 def getDeferredList(names):
-    # journals = frappe.get_list('Journal Entry',filters={'report_type':'Billing','posting_date':dates})
+    # journals = frappe.get_list('Journal Entry',filters={'custom_report_type':'Billing','posting_date':dates})
     try:
-        # journal = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing','posting_date':dates})
+        # journal = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Billing','posting_date':dates})
         deferred_lists = []
         for name in names:
             journal = frappe.get_last_doc('Journal Entry',filters={'name':name})
@@ -550,7 +550,7 @@ def IsJBExported(journal_list):
         print(j)
         try:
             journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
-            journal.is_jb_exported = '1'
+            journal.custom_is_jb_exported = '1'
             journal.save()
             frappe.db.commit()
         except Exception as e:
@@ -560,7 +560,7 @@ def IsExported(journal_list):
     for j in journal_list:
         try:
             journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
-            journal.is_exported = '1'
+            journal.custom_is_exported = '1'
             journal.save()
             frappe.db.commit()
         except Exception as e:
@@ -646,7 +646,7 @@ def exportCRReportToSAP():
         if periodic == 'Daily':
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
-                journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','is_exported':'0','docstatus':'1'})
+                journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
             except:
                 print('No Collection Report is available to be exported!')
@@ -657,7 +657,7 @@ def exportCRReportToSAP():
                                       current_date.month + 1 if current_date.month < 12 else 1,
                                       1, 0, 0, 0)
             #disable in Staging [2]
-            last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','is_exported':'0','docstatus':'1'})
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_exported':'0','docstatus':'1'})
             month = last_journal.posting_date.month
             year = last_journal.posting_date.year
             last = calendar.monthrange(year,month)[1]
@@ -666,7 +666,7 @@ def exportCRReportToSAP():
             last_day = str_date + str(last)
             #end of disable [2]
 
-            journals = frappe.get_all('Journal Entry', filters={'report_type':'Collection','is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Collection','custom_is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
             
             if journals:
                 for j in journals:
@@ -679,10 +679,10 @@ def exportCRReportToSAP():
                 return
         row_lists = []
         for j in journal_list:
-            tag_id = j.tag_id
+            custom_tag_id = j.custom_tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,1,posting_datetime)
+            getRow(accounts,row_list,custom_tag_id,1,posting_datetime)
             row_lists.append(row_list)
         
         if len(journal_list) <= 0:
@@ -703,7 +703,7 @@ def exportCRReportToSAP():
         for entry in combined_array:
             key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
-                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'tag_id': entry['tag_id'],'profit_or_cost_center_number':entry['profit_or_cost_center_number']}
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'custom_tag_id': entry['custom_tag_id'],'profit_or_cost_center_number':entry['profit_or_cost_center_number']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
             cumulative_sums[key]['debit'] += entry.get('debit', 0)
             # Balance the credit and debit
@@ -760,7 +760,7 @@ def exportDRReportToSAP():
 
         if periodic == 'Daily':
             try:
-                journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Deferred Revenue','is_exported':'0','docstatus':'1'})
+                journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Deferred Revenue','custom_is_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
                 names.append(journal.name)
             except:
@@ -780,7 +780,7 @@ def exportDRReportToSAP():
 
             #disable in Staging [2]
             try:
-                last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Deferred Revenue','is_exported':'0','docstatus':'1'})
+                last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Deferred Revenue','custom_is_exported':'0','docstatus':'1'})
                 month = last_journal.posting_date.month
                 year = last_journal.posting_date.year
                 last = calendar.monthrange(year,month)[1]
@@ -792,7 +792,7 @@ def exportDRReportToSAP():
                 return
             #end of disable [2]
 
-            journals = frappe.get_all('Journal Entry', filters={'report_type':'Deferred Revenue','is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Deferred Revenue','custom_is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
             
             if journals:
                 for j in journals:
@@ -871,7 +871,7 @@ def exportBRReportToSAP():
         if periodic == 'Daily':
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
-                journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_exported':'0','docstatus':'1'})
+                journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
                 names.append(journal.name)
             except:
@@ -893,7 +893,7 @@ def exportBRReportToSAP():
             #end of enable [1]
 
             #disable in Staging [2]
-            last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_exported':'0','docstatus':'1'})
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_exported':'0','docstatus':'1'})
             month = last_journal.posting_date.month
             year = last_journal.posting_date.year
             last = calendar.monthrange(year,month)[1]
@@ -902,7 +902,7 @@ def exportBRReportToSAP():
             last_day = str_date + str(last)
             #end of disable [2]
 
-            journals = frappe.get_all('Journal Entry', filters={'report_type':'Billing','is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Billing','custom_is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
             
             if journals:
                 for j in journals:
@@ -914,10 +914,10 @@ def exportBRReportToSAP():
                 return
         row_lists = []
         for j in journal_list:
-            tag_id = j.tag_id
+            custom_tag_id = j.custom_tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,0,posting_datetime)
+            getRow(accounts,row_list,custom_tag_id,0,posting_datetime)
             row_lists.append(row_list)  
         # print('len journals: ',len(names))
         # print(names)
@@ -949,7 +949,7 @@ def exportBRReportToSAP():
         for entry in combined_array:
             key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
-                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'custom_tag_id': entry['custom_tag_id']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
             cumulative_sums[key]['debit'] += entry.get('debit', 0)
             # Balance the credit and debit
@@ -1012,7 +1012,7 @@ def exportJBCRReportToSAP():
         if periodic == 'Daily':
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
-                journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','is_jb_exported':'0','docstatus':'1'})
+                journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_jb_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
             except:
                 print('No Collection Report JB is available to be exported!')
@@ -1032,7 +1032,7 @@ def exportJBCRReportToSAP():
             #end of enable [1]
 
             #disable in Staging [2]
-            last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Collection','is_jb_exported':'0','docstatus':'1'})
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_jb_exported':'0','docstatus':'1'})
             month = last_journal.posting_date.month
             year = last_journal.posting_date.year
             last = calendar.monthrange(year,month)[1]
@@ -1041,7 +1041,7 @@ def exportJBCRReportToSAP():
             last_day = str_date + str(last)
             #end of disable [2]
 
-            journals = frappe.get_all('Journal Entry', filters={'report_type':'Collection','is_jb_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Collection','custom_is_jb_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
             
             if journals:
                 for j in journals:
@@ -1054,10 +1054,10 @@ def exportJBCRReportToSAP():
                 return
         row_lists = []
         for j in journal_list:
-            tag_id = j.tag_id
+            custom_tag_id = j.custom_tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,1,posting_datetime)
+            getRow(accounts,row_list,custom_tag_id,1,posting_datetime)
             row_lists.append(row_list)
         
         if len(journal_list) <= 0:
@@ -1078,7 +1078,7 @@ def exportJBCRReportToSAP():
         for entry in combined_array:
             key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
-                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'tag_id': entry['tag_id'],'profit_or_cost_center_number':entry['profit_or_cost_center_number']}
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'], 'custom_tag_id': entry['custom_tag_id'],'profit_or_cost_center_number':entry['profit_or_cost_center_number']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
             cumulative_sums[key]['debit'] += entry.get('debit', 0)
             # Balance the credit and debit
@@ -1137,7 +1137,7 @@ def exportJBBRReportToSAP():
         if periodic == 'Daily':
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
-                journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_jb_exported':'0','docstatus':'1'})
+                journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_jb_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
                 names.append(journal.name)
             except:
@@ -1159,7 +1159,7 @@ def exportJBBRReportToSAP():
             #end of enable [1]
 
             #disable in Staging [2]
-            last_journal = frappe.get_last_doc('Journal Entry', filters={'report_type':'Billing','is_jb_exported':'0','docstatus':'1'})
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_jb_exported':'0','docstatus':'1'})
             month = last_journal.posting_date.month
             year = last_journal.posting_date.year
             last = calendar.monthrange(year,month)[1]
@@ -1168,7 +1168,7 @@ def exportJBBRReportToSAP():
             last_day = str_date + str(last)
             #end of disable [2]
 
-            journals = frappe.get_all('Journal Entry', filters={'report_type':'Billing','is_jb_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Billing','custom_is_jb_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
             
             if journals:
                 for j in journals:
@@ -1180,10 +1180,10 @@ def exportJBBRReportToSAP():
                 return
         row_lists = []
         for j in journal_list:
-            tag_id = j.tag_id
+            custom_tag_id = j.custom_tag_id
             accounts = j.accounts
             row_list = []
-            getRow(accounts,row_list,tag_id,0,posting_datetime)
+            getRow(accounts,row_list,custom_tag_id,0,posting_datetime)
             row_lists.append(row_list)  
         # print('len journals: ',len(names))
         # print(names)
@@ -1215,7 +1215,7 @@ def exportJBBRReportToSAP():
         for entry in combined_array:
             key = (entry['account_number'], entry['cost_center_number'], entry['remark'], entry['group'],entry['profit_or_cost_center_number'],entry['joint_string'])
             if key not in cumulative_sums:
-                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'tag_id': entry['tag_id']}
+                cumulative_sums[key] = {'year': entry['year'], 'account_number': entry['account_number'], 'cost_center_number': entry['cost_center_number'], 'currency': entry['currency'], 'credit': 0.0, 'debit': 0.0, 'remark': entry['remark'], 'group': entry['group'], 'posting_date': entry['posting_date'],'tax_amount': entry['tax_amount'],'tax_code': entry['tax_code'],'profit_or_cost_center_number': entry['profit_or_cost_center_number'],'san_count': entry['san_count'],'monthly_charge': entry['monthly_charge'],'month_count': entry['month_count'],'current_month': entry['current_month'], 'custom_tag_id': entry['custom_tag_id']}
             cumulative_sums[key]['credit'] += entry.get('credit', 0)
             cumulative_sums[key]['debit'] += entry.get('debit', 0)
             # Balance the credit and debit

@@ -9,7 +9,7 @@ from datetime import date, datetime
 class DeferredRevenueJournalEntry(Document):
 	def before_insert(self):
 		# return True
-		# dates = self.tag_id
+		# dates = self.custom_tag_id
 		# month = dates.month
 		# year = dates.year
 		# monthname = calendar.month_name[month]

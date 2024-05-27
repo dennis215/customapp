@@ -187,15 +187,15 @@ def getRM(price):
     print('price: ',price)
     return price
 
-def checkExist(tag_id, report):
+def checkExist(custom_tag_id, report):
     try:
-        print('tag_id: ',tag_id)
-        je = frappe.get_last_doc('Journal Entry',filters={'report_type':report,'tag_id':tag_id})
+        print('custom_tag_id: ',custom_tag_id)
+        je = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':report,'custom_tag_id':custom_tag_id})
         # domain = 'http://127.0.0.1:8000' + '/app/journal-entry/'+ je.name
         # domain = 'http://175.136.236.153:8003' + '/app/journal-entry/'+ je_name
         # domains = domain + '/app/journal-entry/'+ je.name
         domains = getDomain() + '/app/journal-entry/'+ je.name
-        journal_link = "<a href='"+domains+"' target='_blank'>"+report+" Journal Entry "+tag_id+"</a>"
+        journal_link = "<a href='"+domains+"' target='_blank'>"+report+" Journal Entry "+custom_tag_id+"</a>"
         print('exist: true')
         return True, je.name
     except Exception as e:

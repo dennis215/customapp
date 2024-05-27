@@ -12,7 +12,7 @@ def printing(data):
 
 def checkExist(dates):
     try:
-        doc = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'tag_id':dates})
+        doc = frappe.get_last_doc('Deferred Revenue Journal Entry',filters={'custom_tag_id':dates})
         return True
     except:
         return False
@@ -82,14 +82,14 @@ def deferredRevenue():
             last_day_last_month = first_day_this_month - timedelta(days=1)
             print("----------"+last_day_last_month.strftime("%Y-%m-%d"))
             next_date = last_day_last_month
-            # deferred.tag_id = next_date
+            # deferred.custom_tag_id = next_date
             default = True
         else:
             # last_dr = frappe.get_last_doc('Deferred Revenue')
             # last_posting_date = last_dr.posting_date
             next_date = getNextDate(last_posting_date)
             # deferred.posting_date = next_date
-            # deferred.tag_id = next_date
+            # deferred.custom_tag_id = next_date
             deferred.doc_name = next_date
             default = False
 
@@ -106,7 +106,7 @@ def deferredRevenue():
 
         # 5) take jea from last month je which have deferred revenue            done!
         # if dr_exist:
-        je_exist,row_JE_list, tag_id = getRowLastJE(next_date)
+        je_exist,row_JE_list, custom_tag_id = getRowLastJE(next_date)
     # print('last je length: ',len(row_JE_list))
         print('4) done take jea from last month je')
         for l in row_JE_list:
@@ -161,7 +161,7 @@ def deferredRevenue():
         #     # print('------...----',doc.name)
         #     doCreateJEAonLastMonthJE(date_put,new_list)
         #     print('8) done put new created to last month je')
-        createDeferredAccountingEntries(deferred,tag_id,import_datetime)
+        createDeferredAccountingEntries(deferred,custom_tag_id,import_datetime)
 
 def getNextDate(dates):
     if isinstance(dates, str):
@@ -177,35 +177,35 @@ def getNextDate(dates):
     return next_date
 
 def checkDo():
-    # je_list = frappe.get_list('Journal Entry',filters={'report_type':'Billing'})
+    # je_list = frappe.get_list('Journal Entry',filters={'custom_report_type':'Billing'})
     # if je_list:
-    #     je = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing'})
+    #     je = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Billing'})
     #     posting_date = je.posting_date
 
     # check is any deferred
     dr_list = frappe.get_list('Deferred Revenue Journal Entry')
     if dr_list:
         deferred = frappe.get_last_doc('Deferred Revenue Journal Entry')
-        tag_id = deferred.tag_id
-        # month = tag_id.month
+        custom_tag_id = deferred.custom_tag_id
+        # month = custom_tag_id.month
         # month += 1
-        # days = calendar.monthrange(tag_id.year, month)
-        # date_take = date(day=days[1],month=month,year=tag_id.year)
-        date_take = getNextDate(tag_id)
+        # days = calendar.monthrange(custom_tag_id.year, month)
+        # date_take = date(day=days[1],month=month,year=custom_tag_id.year)
+        date_take = getNextDate(custom_tag_id)
         date_put = getNextDate(date_take)
 
-        je_take_list = frappe.get_list('Journal Entry',filters={'report_type':'Billing','tag_id':date_take})
-        je_put_list = frappe.get_list('Journal Entry',filters={'report_type':'Billing','tag_id':date_put})
+        je_take_list = frappe.get_list('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':date_take})
+        je_put_list = frappe.get_list('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':date_put})
         if je_take_list and je_put_list:
             # je = je_list[0]
             # return True, posting_date
-            # print('tagid: ',tag_id,' postingdate: ',posting_date,' sasa')
+            # print('tagid: ',custom_tag_id,' postingdate: ',posting_date,' sasa')
             return True, date_take,date_put
         else:
             print('Next Billing Journal Entry Has Not Been Created Yet!')
             print('take: ',date_take,' put: ',date_put)
-            take = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing','tag_id':date_take})
-            put = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing','tag_id':date_put})
+            take = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':date_take})
+            put = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':date_put})
             return False,'',''
     else:
         # create 
@@ -216,7 +216,7 @@ def checkDo():
         # days = calendar.monthrange(date_take.year, month)
         # date_put = date(day=days[1],month=month,year=date_take.year)
 
-        je_list = frappe.get_list('Journal Entry',filters={'report_type':'Billing','tag_id':date_put})
+        je_list = frappe.get_list('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':date_put})
         if je_list:
             je = je_list[0]
             # posting_date = posting_date.replace(month=posting_date.month-1)
@@ -230,7 +230,7 @@ def checkDo():
     #     dates = calendar.monthrange(2023,1)
     #     dates = date(day=dates[1],month=1,year=2023)
     #     try:
-    #         je = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing','tag_id':dates})
+    #         je = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':dates})
     #     except:
     #         return
 
@@ -308,12 +308,12 @@ def getRowLastJE(posting_date):
 
     # doc = frappe.get_last_doc('Deferred Revenue Journal Entry', filters={'name':filter})
     # print('title: ',title)
-    # doc = frappe.get_last_doc('Journal Entry', filters={'title':title,'report_type':'Billing'})
+    # doc = frappe.get_last_doc('Journal Entry', filters={'title':title,'custom_report_type':'Billing'})
     je_exist = False
     firstDay = get_first_day(posting_date)   
     doclist = frappe.get_all('Journal Entry',
-    filters={'report_type': 'Billing',"docstatus":1, 'posting_date': ['between', [firstDay, posting_date]]},fields=['*'])
-    # doclist = frappe.get_list('Journal Entry', filters={'report_type':'Billing',"docstatus":1,'posting_date':['>=', firstDay, '<=', posting_date]})
+    filters={'custom_report_type': 'Billing',"docstatus":1, 'posting_date': ['between', [firstDay, posting_date]]},fields=['*'])
+    # doclist = frappe.get_list('Journal Entry', filters={'custom_report_type':'Billing',"docstatus":1,'posting_date':['>=', firstDay, '<=', posting_date]})
     if doclist:
         je_exist = True
     else: 
@@ -339,12 +339,12 @@ def getRowLastJE(posting_date):
                 'account_number':row.account_number,
                 'cost_center':row.cost_center,
                 'cost_center_number':row.cost_center_number,
-                'currency':row.currency,
+                'currency':row.custom_remark,
                 'debit_in_account_currency' : float(row.debit_in_account_currency),
                 'credit_in_account_currency' : float(row.credit_in_account_currency),
-                'remark':row.remark,
-                'group':row.group,
-                'year': row.year,
+                'remark':row.custom_remark,
+                'group':row.custom_group,
+                'year': row.custom_year,
                 'posting_date':row.posting_date,
                 'tax_amount':row.tax_amount,
                 'tax_code':row.tax_code,
@@ -365,14 +365,14 @@ def getRowLastJE(posting_date):
     # print(data)
     # for row in data_entries_list:
     #     print(row['month_count'])
-    return je_exist,data_entries_list, doc.tag_id
+    return je_exist,data_entries_list, doc.custom_tag_id
 
 def doCreateJEAonLastMonthJE(date_put, new_list):
-    doc = frappe.get_last_doc('Journal Entry',filters={'report_type':'Billing','tag_id':date_put})
+    doc = frappe.get_last_doc('Journal Entry',filters={'custom_report_type':'Billing','custom_tag_id':date_put})
     je = frappe.new_doc('Journal Entry')
     je.title = doc.title
-    je.tag_id = doc.tag_id
-    je.report_type = doc.report_type
+    je.custom_tag_id = doc.custom_tag_id
+    je.custom_report_type = doc.custom_report_type
     je.naming_series = doc.naming_series
     je.posting_date = doc.posting_date
     je.accounts = doc.accounts
@@ -389,8 +389,8 @@ def doCreateJEAonLastMonthJE(date_put, new_list):
             counter = 1
             total_credit += row['credit_in_account_currency']
     # total_debit, total_credit = getDeferredTotal(total_debit)
-    je.total_deferred_debit = 'RM '+str(total_debit)
-    je.total_deferred_credit = 'RM '+str(total_credit)
+    je.custom_total_deferred_debit = 'RM '+str(total_debit)
+    je.custom_total_deferred_credit = 'RM '+str(total_credit)
 
     doc.cancel()
     doc.delete()
@@ -648,7 +648,7 @@ def getJEALastDR(yearMonth):
     # split = name.split(' ')
     # month = split[0]
     # if month == 'February' or month == 'March':
-    # last_posting_date = deferred.tag_id
+    # last_posting_date = deferred.custom_tag_id
     # last_posting_date = deferred.posting_date
     last_posting_date = getNextDate2(deferred.doc_name,yearMonth)
 
@@ -663,27 +663,27 @@ def getJEALastDR(yearMonth):
         if row.month_count != 0:
             acc_dict = {
                 'account':row.account,
-                'account_number':row.account_number,
+                'account_number':row.custom_account_number,
                 'cost_center':row.cost_center,
-                'cost_center_number':row.cost_center_number,
-                'currency':row.currency,
+                'cost_center_number':row.custom_cost_center_number,
+                'currency':row.custom_currency,
                 'debit_in_account_currency' : float(row.debit_in_account_currency),
                 'credit_in_account_currency' : float(row.credit_in_account_currency),
-                'remark':row.remark,
-                'group':row.group,
-                'year': row.year,
+                'remark':row.custom_remark,
+                'group':row.custom_group,
+                'year': row.custom_year,
                 # 'posting_date':row.posting_date,
                 'posting_date':next_date,
-                'tax_amount':row.tax_amount,
-                'tax_code':row.tax_code,
-                'profit_or_cost_center_number':row.profit_or_cost_center_number,
-                'san_count':row.san_count,
-                'monthly_charge':row.monthly_charge,
-                'month_count':row.month_count,
-                'current_month':row.current_month,
-                'revenue_account':row.revenue_account,
+                'tax_amount':row.custom_tax_amount,
+                'tax_code':row.custom_tax_code,
+                'profit_or_cost_center_number':row.custom_profit_or_cost_center_number,
+                'san_count':row.custom_san_count,
+                'monthly_charge':row.custom_monthly_charge,
+                'month_count':row.custom_month_count,
+                'current_month':row.custom_current_month,
+                'revenue_account':row.custom_revenue_account,
                 'journal_entry':row.journal_entry,
-                'joint_string':row.joint_string
+                'joint_string':row.custom_joint_string
                 # 'new_cost_center':row.new_cost_center
             }
             rows_list.append(acc_dict)
@@ -691,11 +691,11 @@ def getJEALastDR(yearMonth):
     return dr_exist, rows_list, last_posting_date
 
 # def createDeferredAccountingEntries(journal,new_date):
-def createDeferredAccountingEntries(deferred,tag_id,import_datetime):
+def createDeferredAccountingEntries(deferred,custom_tag_id,import_datetime):
     today = import_datetime.date()
     first_day_this_month = today.replace(day=1)
     deferredje = frappe.new_doc('Journal Entry')
-    deferredje.report_type = 'Deferred Revenue'
+    deferredje.custom_report_type = 'Deferred Revenue'
     deferredje.entry_type = "Journal Entry"
 
     # deferreds = getDocList('Deferred Revenue Journal Entry','',True)
@@ -820,12 +820,12 @@ def createDeferredAccountingEntries(deferred,tag_id,import_datetime):
     # for i in dr:
     #     print(i) 
     #     print('\n\n')
-    # deferredje.total_deferred_debit = getRM(total_debit)
-    # deferredje.total_deferred_credit = getRM(total_credit)
+    # deferredje.custom_total_deferred_debit = getRM(total_debit)
+    # deferredje.custom_total_deferred_credit = getRM(total_credit)
     deferredje.total_debit = getRM(total_debit)
     deferredje.total_credit = getRM(total_credit)
     deferredje.posting_date = first_day_this_month
-    deferredje.tag_id = tag_id
+    deferredje.custom_tag_id = custom_tag_id
     deferredje.title = 'Deferred Revenue - '+ getDateString(first_day_this_month)
     deferredje.save()
     deferredje.submit()
