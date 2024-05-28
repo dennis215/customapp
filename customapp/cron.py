@@ -323,7 +323,6 @@ def createAccountingEntries(journal,cr,end_date):
         journal.save()
         domains = domain + '/app/journal-entry/'+ journal.name
         journal_link = "<a href='"+domains+"' target='_blank'>Collection Journal Entry "+str(end_date)+"</a>"
-        # frappe.msgprint('One Journal Entry has been created, See Here ')
         return je_name,journal_link
     else:
         counter = 1
@@ -369,7 +368,18 @@ def createAccountingEntries(journal,cr,end_date):
                 row['cost_center'] = cost_center.name
                 # print('----credit: ',row['credit'])
                 row['credit_in_account_currency'] = row['credit']
-                
+            # re-map
+            row['custom_year'] = row['year']
+            row['custom_remark'] = row['remark']
+            row['custom_currency'] = row['currency']
+            row['custom_group'] = row['group']
+            row['custom_account_number'] = row['account_number']
+            row['custom_cost_center_number'] = row['cost_center_number']
+            row['custom_posting_date'] = row['posting_date']
+            row['custom_profit_or_cost_center_number'] = row['profit_or_cost_center_number']
+            row['custom_is_jb'] = row['is_jb']
+            row['custom_joint_string'] = row['joint_string']
+
             journal.append('accounts',row)
 
         # now = datetime.now().date()
@@ -378,7 +388,6 @@ def createAccountingEntries(journal,cr,end_date):
         journal.entry_type = "Journal Entry"
         postingdate=pytz.timezone('Asia/Kuala_Lumpur').localize(datetime.combine(latest_posting, datetime.min.time()))
         journal.posting_date = postingdate.strftime('%Y-%m-%d')
-        # print('--------------POSTING DATE: ',posting_date)
         # month = getMonth(posting_date)
         # year = latest_posting.year
         # custom_tag_id = getDatetime(posting_date)

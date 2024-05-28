@@ -353,7 +353,6 @@ def getDeferredList(names):
         deferred_lists = []
         for name in names:
             journal = frappe.get_last_doc('Journal Entry',filters={'name':name})
-
             # deferred = journal.deferred_accounts
             deferred = journal.accounts
             # print('je: ',journal.name)
@@ -361,18 +360,18 @@ def getDeferredList(names):
             deferred_list = []
             for row in deferred:
                 deff = {}
-                deff['account_number'] = row.account_number
-                deff['cost_center_number'] = row.cost_center_number
-                deff['currency'] = row.currency
+                deff['account_number'] = row.custom_account_number
+                deff['cost_center_number'] = row.custom_cost_center_number
+                deff['currency'] = row.custom_currency
                 deff['debit'] = row.debit_in_account_currency
                 deff['credit'] = row.credit_in_account_currency
-                deff['remark'] = row.remark
-                deff['group'] = row.group
-                deff['year'] = row.year
-                deff['posting_date'] = row.posting_date
-                deff['tax_amount'] = row.tax_amount
-                deff['tax_code'] = row.tax_code
-                deff['profit_or_cost_center_number'] = row.profit_or_cost_center_number
+                deff['remark'] = row.custom_remark
+                deff['group'] = row.custom_group
+                deff['year'] = row.custom_year
+                deff['posting_date'] = row.custom_posting_date
+                deff['tax_amount'] = row.custom_tax_amount
+                deff['tax_code'] = row.custom_tax_code
+                deff['profit_or_cost_center_number'] = row.custom_profit_or_cost_center_number
                 deferred_list.append(deff)
             deferred_lists.append(deferred_list)
         return deferred_lists

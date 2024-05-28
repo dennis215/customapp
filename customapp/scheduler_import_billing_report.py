@@ -2459,6 +2459,25 @@ def createAccountingEntries(journal,cr,end_date):
             #             createNewRow(journal,row_list[1])
         
         # --------------------------------------logic for deferred and revenue----------------
+            # re-map
+            row['custom_year'] = row['year']
+            row['custom_remark'] = row['remark']
+            row['custom_currency'] = row['currency']
+            row['custom_group'] = row['group']
+            row['custom_account_number'] = row['account_number']
+            row['custom_cost_center_number'] = row['cost_center_number']
+            row['custom_posting_date'] = row['posting_date']
+            row['custom_profit_or_cost_center_number'] = row['profit_or_cost_center_number']
+            row['custom_is_jb'] = row['is_jb']
+            row['custom_joint_string'] = row['joint_string']
+            row['custom_tax_amount'] = row['tax_amount']
+            row['custom_tax_code'] = row['tax_code']
+            row['custom_san_count'] = row['san_count']
+            row['custom_monthly_charge'] = row['monthly_charge']
+            row['custom_month_count'] = row['month_count']
+            row['custom_current_month'] = row['current_month']
+            row['custom_revenue_account'] = row['revenue_account']
+            row['custom_joint_string'] = row['joint_string']
             journal.append('accounts',row)
 
         # now = datetime.now().date()

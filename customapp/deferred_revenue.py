@@ -324,39 +324,34 @@ def getRowLastJE(posting_date):
         journal_entry = frappe.get_doc('Journal Entry', doc.name)
         account_entries_list.append(journal_entry.accounts)
     flat_account_entries_list = [entry for sublist in account_entries_list for entry in sublist]
-    # print('doc name: ',doc.name)
-    # print('row list:')
-    # print(row_list)
-    # print('length row: ',len(row_list))
 
     data_entries_list = []
     for row in flat_account_entries_list:
     # row = account_entries_list[0]
-        print("row.revenue_account",row.revenue_account)
-        if row.month_count >1 and row.revenue_account != '':
+        if row.custom_month_count >1 and row.custom_revenue_account != '':
             data = {
                 'account':row.account,
-                'account_number':row.account_number,
+                'account_number':row.custom_account_number,
                 'cost_center':row.cost_center,
-                'cost_center_number':row.cost_center_number,
-                'currency':row.custom_remark,
+                'cost_center_number':row.custom_cost_center_number,
+                'currency':row.custom_currency,
                 'debit_in_account_currency' : float(row.debit_in_account_currency),
                 'credit_in_account_currency' : float(row.credit_in_account_currency),
                 'remark':row.custom_remark,
                 'group':row.custom_group,
                 'year': row.custom_year,
-                'posting_date':row.posting_date,
-                'tax_amount':row.tax_amount,
-                'tax_code':row.tax_code,
-                'profit_or_cost_center_number':row.profit_or_cost_center_number,
-                'san_count':row.san_count,
-                'monthly_charge':row.monthly_charge,
-                'month_count':row.month_count,
-                'current_month':row.current_month,
-                'revenue_account':row.revenue_account,
+                'posting_date':row.custom_posting_date,
+                'tax_amount':row.custom_tax_amount,
+                'tax_code':row.custom_tax_code,
+                'profit_or_cost_center_number':row.custom_profit_or_cost_center_number,
+                'san_count':row.custom_san_count,
+                'monthly_charge':row.custom_monthly_charge,
+                'month_count':row.custom_month_count,
+                'current_month':row.custom_current_month,
+                'revenue_account':row.custom_revenue_account,
                 'new_cost_center':row.new_cost_center,
                 'journal_entry':doc.name,
-                'joint_string':row.joint_string
+                'joint_string':row.custom_joint_string
             }
             data_entries_list.append(data)
         else:
@@ -663,27 +658,27 @@ def getJEALastDR(yearMonth):
         if row.month_count != 0:
             acc_dict = {
                 'account':row.account,
-                'account_number':row.custom_account_number,
+                'account_number':row.account_number,
                 'cost_center':row.cost_center,
-                'cost_center_number':row.custom_cost_center_number,
-                'currency':row.custom_currency,
+                'cost_center_number':row.cost_center_number,
+                'currency':row.currency,
                 'debit_in_account_currency' : float(row.debit_in_account_currency),
                 'credit_in_account_currency' : float(row.credit_in_account_currency),
-                'remark':row.custom_remark,
-                'group':row.custom_group,
-                'year': row.custom_year,
+                'remark':row.remark,
+                'group':row.group,
+                'year': row.year,
                 # 'posting_date':row.posting_date,
                 'posting_date':next_date,
-                'tax_amount':row.custom_tax_amount,
-                'tax_code':row.custom_tax_code,
-                'profit_or_cost_center_number':row.custom_profit_or_cost_center_number,
-                'san_count':row.custom_san_count,
-                'monthly_charge':row.custom_monthly_charge,
-                'month_count':row.custom_month_count,
-                'current_month':row.custom_current_month,
-                'revenue_account':row.custom_revenue_account,
+                'tax_amount':row.tax_amount,
+                'tax_code':row.tax_code,
+                'profit_or_cost_center_number':row.profit_or_cost_center_number,
+                'san_count':row.san_count,
+                'monthly_charge':row.monthly_charge,
+                'month_count':row.month_count,
+                'current_month':row.current_month,
+                'revenue_account':row.revenue_account,
                 'journal_entry':row.journal_entry,
-                'joint_string':row.custom_joint_string
+                'joint_string':row.joint_string
                 # 'new_cost_center':row.new_cost_center
             }
             rows_list.append(acc_dict)
@@ -802,6 +797,26 @@ def createDeferredAccountingEntries(deferred,custom_tag_id,import_datetime):
     print('------------testest  sdsdss-----------------')
     for row in new_list:
         print(row)
+
+        # re-map
+        row['custom_year'] = row['year']
+        row['custom_remark'] = row['remark']
+        row['custom_currency'] = row['currency']
+        row['custom_group'] = row['group']
+        row['custom_account_number'] = row['account_number']
+        row['custom_cost_center_number'] = row['cost_center_number']
+        row['custom_posting_date'] = row['posting_date']
+        row['custom_profit_or_cost_center_number'] = row['profit_or_cost_center_number']
+        row['custom_joint_string'] = row['joint_string']
+        row['custom_tax_amount'] = row['tax_amount']
+        row['custom_tax_code'] = row['tax_code']
+        row['custom_san_count'] = row['san_count']
+        row['custom_monthly_charge'] = row['monthly_charge']
+        row['custom_month_count'] = row['month_count']
+        row['custom_current_month'] = row['current_month']
+        row['custom_revenue_account'] = row['revenue_account']
+        row['custom_joint_string'] = row['joint_string']
+
         if row['debit_in_account_currency'] != 0:
             total_debit += row['debit_in_account_currency']
         else:
