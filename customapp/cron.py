@@ -455,14 +455,6 @@ def checkFile(cr_dict,cr,batch_id,new_date):
 def doImportCollectionReportSingle(file,cr_dict,cr,batch_id,new_date):
     global domain
     domain = getDomain()
-    scheduler_cr = frappe.get_last_doc('Scheduler Manager',filters={'name':'Collection Report (Import)'})
-    controller = scheduler_cr.control
-    # if controller == 'Play':
-    #     print('Scheduler: Play')
-    #     pass
-    # elif controller == 'Stop':
-    #     print('Scheduler: Stop')
-    #     return
     # much = False
     # if start_date != end_date:
     #     much = True
@@ -555,11 +547,20 @@ def checkJEExist(start_date, end_date):
 
 # @frappe.whitelist(allow_guest=True)
 def doImportCollectionReport():
+    scheduler_cr = frappe.get_last_doc('Scheduler Manager',filters={'name':'Collection Report (Import)'})
+    controller = scheduler_cr.control
+    if controller == 'Play':
+        print('Scheduler: Play')
+        pass
+    elif controller == 'Stop':
+        print('Scheduler: Stop')
+        return
     errors=[]
     getFileData = {"name": "Collection"}
     headers = {
         "Content-Type": "application/json",
     }
+
     # prod internal
     # getFileReqUrl = 'http://172.18.96.101:80/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
     # returnReqUrl = 'http://172.18.96.101:80/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
