@@ -27,7 +27,7 @@ def deferredRevenue():
     split = sites.split('/')
     site = split[1]
     scheduler = frappe.get_last_doc('Scheduler Manager',filters={'name':'Deferred Revenue (Import)'})
-    controller = scheduler_cr.control
+    controller = scheduler.control
     if controller == 'Play':
         print('Scheduler: Play')
         pass
