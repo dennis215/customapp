@@ -384,14 +384,6 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
     domain = getDomain()
     
     # doUAT()
-    # scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing Report'})
-    # if scheduler.control == 'Stop':
-    #     print('-----------------Billing Report Scheduler: Stopped')
-    #     return
-    # else:
-    # # if True:
-    #     print('-----------------Billing Report Scheduler: Playing')
-
     # ---------------------------------real one call api--------------------------
 
 
@@ -665,6 +657,13 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
         # doc.submit()
 
 def doImportBillingReport():
+    scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing Report'})
+    if scheduler.control == 'Stop':
+        print('-----------------Billing Report Scheduler: Stopped')
+        return
+    else:
+    # if True:
+        print('-----------------Billing Report Scheduler: Playing')
     errors=[]
     getFileData = {"name": "pfile"}
     headers = {

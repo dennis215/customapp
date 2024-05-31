@@ -632,6 +632,13 @@ def exportCRReportToSAP():
     # if scheduler == 'Collection Report (Export)':
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Collection Report (Export)'})
+        controller = scheduler_cr.control
+        if controller == 'Play':
+            print('Scheduler: Play')
+            pass
+        elif controller == 'Stop':
+            print('Scheduler: Stop')
+            return
         if scheduler.report_name == '' or scheduler.report_name is None:
             print('generate file name: ')
             filename = getExportFilename(1)
@@ -747,6 +754,13 @@ def exportDRReportToSAP():
     print('--export Deferred Revenue----')
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Deferred Revenue (Export)'})
+        controller = scheduler_cr.control
+        if controller == 'Play':
+            print('Scheduler: Play')
+            pass
+        elif controller == 'Stop':
+            print('Scheduler: Stop')
+            return
         if scheduler.report_name == '' or scheduler.report_name is None:
             filename = getExportFilename(2)
         else:
@@ -856,6 +870,13 @@ def exportBRReportToSAP():
     print('--export Billing Report----')
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing Report (Export)'})
+        controller = scheduler_cr.control
+        if controller == 'Play':
+            print('Scheduler: Play')
+            pass
+        elif controller == 'Stop':
+            print('Scheduler: Stop')
+            return
         print('report_name:',scheduler.report_name,'#')
         if scheduler.report_name == '' or scheduler.report_name is None:
             filename = getExportFilename(3)
@@ -998,6 +1019,13 @@ def exportJBCRReportToSAP():
     # if scheduler == 'Collection Report (Export)':
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Collection JB Report (Export)'})
+        controller = scheduler_cr.control
+        if controller == 'Play':
+            print('Scheduler: Play')
+            pass
+        elif controller == 'Stop':
+            print('Scheduler: Stop')
+            return
         if scheduler.report_name == '' or scheduler.report_name is None:
             print('generate file name: ')
             filename = getExportFilename(1)
@@ -1122,6 +1150,13 @@ def exportJBBRReportToSAP():
     print('--export Billing JB Report----')
     try:
         scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing JB Report (Export)'})
+        controller = scheduler_cr.control
+        if controller == 'Play':
+            print('Scheduler: Play')
+            pass
+        elif controller == 'Stop':
+            print('Scheduler: Stop')
+            return
         print('report_name:',scheduler.report_name,'#')
         if scheduler.report_name == '' or scheduler.report_name is None:
             filename = getExportFilename(3)
