@@ -572,7 +572,7 @@ def doImportCollectionReport():
     # prod internal
     # getFileReqUrl = 'http://172.18.96.101:80/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
     # returnReqUrl = 'http://172.18.96.101:80/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
-    # prod
+    # prod final
     getFileReqUrl = 'http://192.168.200.12:5002/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
     returnReqUrl = 'http://192.168.200.12:5002/internal/SchedulerEOD/ERPNextFileChecking?ApiKey=vGDkYOrDj5FPhxZrXCKLf5x6lnCIvsSZnsAC'
     # getFileReqUrl = 'https://bsportal.indahwater.app/internal/SchedulerEOD/RetrieveFiles?ApiKey=lDw6rUrzz5mf7fdNiiAdEdKort5el21TpcmC'
