@@ -659,7 +659,7 @@ def doImportBillingReportSingle(file,cr_dict,cr,batch_id,new_date):
 def doImportBillingReport():
     scheduler = frappe.get_last_doc('Scheduler Manager',filters={'scheduler':'Billing Report'})
     if scheduler.control == 'Stop':
-        print('-----------------Billing Report Scheduler: Stopped')
+        raise Exception('-----------------Billing Report Scheduler: Stopped')
         return
     else:
     # if True:

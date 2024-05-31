@@ -32,7 +32,7 @@ def deferredRevenue():
         print('Scheduler: Play')
         pass
     elif controller == 'Stop':
-        print('Scheduler: Stop')
+        raise Exception('Scheduler: Stop')
         return
     if scheduler.import_datetime:
         import_datetime=scheduler.import_datetime

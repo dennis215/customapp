@@ -553,7 +553,7 @@ def doImportCollectionReport():
         print('Scheduler: Play')
         pass
     elif controller == 'Stop':
-        print('Scheduler: Stop')
+        raise Exception('Scheduler: Stop')
         return
     errors=[]
     getFileData = {"name": "Collection"}
