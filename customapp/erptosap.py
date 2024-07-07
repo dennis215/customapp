@@ -648,8 +648,20 @@ def exportCRReportToSAP():
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
-
+        follow_periodic = scheduler.follow_periodic
+        execute_time = scheduler.execute_time
+        if follow_periodic=='Yes':  
+            if not execute_time:
+                execute_time = timedelta(hours=0, minutes=0, seconds=0)
+            total_seconds = execute_time.total_seconds()
+            execute_time_hours = int(total_seconds // 3600)
+            execute_time_minutes = int((total_seconds % 3600) // 60) 
+        current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
         if periodic == 'Daily':
+            if follow_periodic=='Yes':
+                is_12am = current_date.hour == 0 and current_date.minute == 0
+                if is_12am == False:
+                    raise Exception('Scheduler: Daily scheduler')
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_exported':'0','docstatus':'1'})
@@ -658,10 +670,42 @@ def exportCRReportToSAP():
                 print('No Collection Report is available to be exported!')
                 return
         elif periodic == 'Month End':
-            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            if follow_periodic=='Yes':
+                _, last_day = calendar.monthrange(current_date.year, current_date.month)
+                is_last_day = current_date.day == last_day
+                if not (is_last_day == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: MONTH END at '+str(execute_time))
             posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
-                                      current_date.month + 1 if current_date.month < 12 else 1,
-                                      1, 0, 0, 0)
+                                    current_date.month + 1 if current_date.month < 12 else 1,
+                                    1, 0, 0, 0)
+            #disable in Staging [2]
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_exported':'0','docstatus':'1'})
+            month = last_journal.posting_date.month
+            year = last_journal.posting_date.year
+            last = calendar.monthrange(year,month)[1]
+            str_date = str(year) + '-' + str(month) + '-'
+            first_day = str_date + '01'
+            last_day = str_date + str(last)
+            #end of disable [2]
+
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Collection','custom_is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            
+            if journals:
+                for j in journals:
+                    journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
+                    journal_list.append(journal)
+                    print('----------journal_list-----------------')
+                    print(journal_list)
+            else:
+                print('No Collection Report is available to be exported!')
+                return
+        elif periodic == 'Month Start':
+            if follow_periodic=='Yes':
+                is_first_day_of_month = current_date.day == 1
+                if not (is_first_day_of_month == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: Start of Month at '+str(execute_time))
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year,current_date.month,1, 0, 0, 0)
             #disable in Staging [2]
             last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_exported':'0','docstatus':'1'})
             month = last_journal.posting_date.month
@@ -769,9 +813,22 @@ def exportDRReportToSAP():
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
+        follow_periodic = scheduler.follow_periodic
+        execute_time = scheduler.execute_time
+        if follow_periodic=='Yes':  
+            if not execute_time:
+                execute_time = timedelta(hours=0, minutes=0, seconds=0)
+            total_seconds = execute_time.total_seconds()
+            execute_time_hours = int(total_seconds // 3600)
+            execute_time_minutes = int((total_seconds % 3600) // 60) 
+        current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
         names = []
 
         if periodic == 'Daily':
+            if follow_periodic=='Yes':
+                is_12am = current_date.hour == 0 and current_date.minute == 0
+                if is_12am == False:
+                    raise Exception('Scheduler: Daily scheduler')
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Deferred Revenue','custom_is_exported':'0','docstatus':'1'})
                 journal_list.append(journal)
@@ -781,17 +838,38 @@ def exportDRReportToSAP():
                 return
             
         elif periodic == 'Month End':
-            #enable in Staging [1]
-            # now = datetime.now()
-            # month = now.month
-            # year = now.year
-            # last = calendar.monthrange(year,month)[1]
-            # str_date = str(year) + '-' + str(month) + '-'
-            # first_day = str_date + '01'
-            # last_day = str_date + str(last)
-            #end of enable [1]
-
-            #disable in Staging [2]
+            if follow_periodic=='Yes':
+                _, last_day = calendar.monthrange(current_date.year, current_date.month)
+                is_last_day = current_date.day == last_day
+                if not (is_last_day == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: MONTH END at '+str(execute_time))
+            try:
+                last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Deferred Revenue','custom_is_exported':'0','docstatus':'1'})
+                month = last_journal.posting_date.month
+                year = last_journal.posting_date.year
+                last = calendar.monthrange(year,month)[1]
+                str_date = str(year) + '-' + str(month) + '-'
+                first_day = str_date + '01'
+                last_day = str_date + str(last)
+            except:
+                print('Deferred Revenue Not Found!')
+                return
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Deferred Revenue','custom_is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            
+            if journals:
+                for j in journals:
+                    journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
+                    journal_list.append(journal)
+                    names.append(journal.name)
+            else:
+                print('No Collection Report is available to be exported!')
+                return
+            #end of disable [2]
+        elif periodic == 'Month Start':
+            if follow_periodic=='Yes':
+                is_first_day_of_month = current_date.day == 1
+                if not (is_first_day_of_month == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: Start of Month at '+str(execute_time))
             try:
                 last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Deferred Revenue','custom_is_exported':'0','docstatus':'1'})
                 month = last_journal.posting_date.month
@@ -886,9 +964,22 @@ def exportBRReportToSAP():
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
+        follow_periodic = scheduler.follow_periodic
+        execute_time = scheduler.execute_time
+        if follow_periodic=='Yes':  
+            if not execute_time:
+                execute_time = timedelta(hours=0, minutes=0, seconds=0)
+            total_seconds = execute_time.total_seconds()
+            execute_time_hours = int(total_seconds // 3600)
+            execute_time_minutes = int((total_seconds % 3600) // 60) 
+        current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
         names = []
 
         if periodic == 'Daily':
+            if follow_periodic=='Yes':
+                is_12am = current_date.hour == 0 and current_date.minute == 0
+                if is_12am == False:
+                    raise Exception('Scheduler: Daily scheduler')
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_exported':'0','docstatus':'1'})
@@ -898,19 +989,45 @@ def exportBRReportToSAP():
                 print('No Billing Journal Entry available to be exported!')
                 return
         elif periodic == 'Month End':
+            if follow_periodic=='Yes':
+                _, last_day = calendar.monthrange(current_date.year, current_date.month)
+                is_last_day = current_date.day == last_day
+                if not (is_last_day == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: MONTH END at '+str(execute_time))
             current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
-                                      current_date.month + 1 if current_date.month < 12 else 1,
-                                      1, 0, 0, 0)
-            #enable in Staging [1]
-            # now = datetime.now()
-            # month = now.month
-            # year = now.year
-            # last = calendar.monthrange(year,month)[1]
-            # str_date = str(year) + '-' + str(month) + '-'
-            # first_day = str_date + '01'
-            # last_day = str_date + str(last)
-            #end of enable [1]
+                                    current_date.month + 1 if current_date.month < 12 else 1,
+                                    1, 0, 0, 0)
+
+            #disable in Staging [2]
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_exported':'0','docstatus':'1'})
+            month = last_journal.posting_date.month
+            year = last_journal.posting_date.year
+            last = calendar.monthrange(year,month)[1]
+            str_date = str(year) + '-' + str(month) + '-'
+            first_day = str_date + '01'
+            last_day = str_date + str(last)
+            #end of disable [2]
+
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Billing','custom_is_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            
+            if journals:
+                for j in journals:
+                    journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
+                    journal_list.append(journal)
+                    names.append(journal.name)
+            else:
+                print('No Billing Report is available to be exported!')
+                return
+        elif periodic == 'Month Start':
+            if follow_periodic=='Yes':
+                is_first_day_of_month = current_date.day == 1
+                if not (is_first_day_of_month == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: Start of Month at '+str(execute_time))
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
+                                    current_date.month + 1 if current_date.month < 12 else 1,
+                                    1, 0, 0, 0)
 
             #disable in Staging [2]
             last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_exported':'0','docstatus':'1'})
@@ -1035,8 +1152,21 @@ def exportJBCRReportToSAP():
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
+        follow_periodic = scheduler.follow_periodic
+        execute_time = scheduler.execute_time
+        if follow_periodic=='Yes':  
+            if not execute_time:
+                execute_time = timedelta(hours=0, minutes=0, seconds=0)
+            total_seconds = execute_time.total_seconds()
+            execute_time_hours = int(total_seconds // 3600)
+            execute_time_minutes = int((total_seconds % 3600) // 60) 
+        current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
 
         if periodic == 'Daily':
+            if follow_periodic=='Yes':
+                is_12am = current_date.hour == 0 and current_date.minute == 0
+                if is_12am == False:
+                    raise Exception('Scheduler: Daily scheduler')
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_jb_exported':'0','docstatus':'1'})
@@ -1045,6 +1175,50 @@ def exportJBCRReportToSAP():
                 print('No Collection Report JB is available to be exported!')
                 return
         elif periodic == 'Month End':
+            if follow_periodic=='Yes':
+                _, last_day = calendar.monthrange(current_date.year, current_date.month)
+                is_last_day = current_date.day == last_day
+                if not (is_last_day == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: MONTH END at '+str(execute_time))
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
+                                      current_date.month + 1 if current_date.month < 12 else 1,
+                                      1, 0, 0, 0)
+            #enable in Staging [1]
+            # now = datetime.now()
+            # month = now.month
+            # months = str(month)
+            # if len(str(month)) < 2:
+                # months = '0'+str(month)
+            # month_filter = '%-'+months+'-%'
+            #end of enable [1]
+
+            #disable in Staging [2]
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Collection','custom_is_jb_exported':'0','docstatus':'1'})
+            month = last_journal.posting_date.month
+            year = last_journal.posting_date.year
+            last = calendar.monthrange(year,month)[1]
+            str_date = str(year) + '-' + str(month) + '-'
+            first_day = str_date + '01'
+            last_day = str_date + str(last)
+            #end of disable [2]
+
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Collection','custom_is_jb_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            
+            if journals:
+                for j in journals:
+                    journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
+                    journal_list.append(journal)
+                    print('----------journal_list-----------------')
+                    print(journal_list)
+            else:
+                print('No Collection Report JB is available to be exported!')
+                return
+        elif periodic == 'Month Start':
+            if follow_periodic=='Yes':
+                is_first_day_of_month = current_date.day == 1
+                if not (is_first_day_of_month == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: Start of Month at '+str(execute_time))
             current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
                                       current_date.month + 1 if current_date.month < 12 else 1,
@@ -1166,9 +1340,22 @@ def exportJBBRReportToSAP():
         server_path = scheduler.path
         journal_list = []
         periodic = scheduler.periodic
+        follow_periodic = scheduler.follow_periodic
+        execute_time = scheduler.execute_time
+        if follow_periodic=='Yes':  
+            if not execute_time:
+                execute_time = timedelta(hours=0, minutes=0, seconds=0)
+            total_seconds = execute_time.total_seconds()
+            execute_time_hours = int(total_seconds // 3600)
+            execute_time_minutes = int((total_seconds % 3600) // 60) 
+        current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
         names = []
 
         if periodic == 'Daily':
+            if follow_periodic=='Yes':
+                is_12am = current_date.hour == 0 and current_date.minute == 0
+                if is_12am == False:
+                    raise Exception('Scheduler: Daily scheduler')
             posting_datetime = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             try:
                 journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_jb_exported':'0','docstatus':'1'})
@@ -1178,19 +1365,45 @@ def exportJBBRReportToSAP():
                 print('No Billing Journal JB Entry available to be exported!')
                 return
         elif periodic == 'Month End':
+            if follow_periodic=='Yes':
+                _, last_day = calendar.monthrange(current_date.year, current_date.month)
+                is_last_day = current_date.day == last_day
+                if not (is_last_day == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: MONTH END at '+str(execute_time))
             current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
             posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
                                       current_date.month + 1 if current_date.month < 12 else 1,
                                       1, 0, 0, 0)
-            #enable in Staging [1]
-            # now = datetime.now()
-            # month = now.month
-            # year = now.year
-            # last = calendar.monthrange(year,month)[1]
-            # str_date = str(year) + '-' + str(month) + '-'
-            # first_day = str_date + '01'
-            # last_day = str_date + str(last)
-            #end of enable [1]
+
+            #disable in Staging [2]
+            last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_jb_exported':'0','docstatus':'1'})
+            month = last_journal.posting_date.month
+            year = last_journal.posting_date.year
+            last = calendar.monthrange(year,month)[1]
+            str_date = str(year) + '-' + str(month) + '-'
+            first_day = str_date + '01'
+            last_day = str_date + str(last)
+            #end of disable [2]
+
+            journals = frappe.get_all('Journal Entry', filters={'custom_report_type':'Billing','custom_is_jb_exported':'0','posting_date':['between',[first_day,last_day]],'docstatus':'1'})
+            
+            if journals:
+                for j in journals:
+                    journal = frappe.get_last_doc('Journal Entry',filters={'name':j.name})
+                    journal_list.append(journal)
+                    names.append(journal.name)
+            else:
+                print('No Billing Report is available to be exported!')
+                return
+        elif periodic == 'Month Start':
+            if follow_periodic=='Yes':
+                is_first_day_of_month = current_date.day == 1
+                if not (is_first_day_of_month == True and current_date.hour == execute_time_hours and current_date.minute == execute_time_minutes):
+                    raise Exception('Scheduler: Start of Month at '+str(execute_time))
+            current_date  = datetime.now(pytz.timezone('Asia/Kuala_Lumpur'))
+            posting_datetime = datetime(current_date.year if current_date.month < 12 else current_date.year + 1,
+                                      current_date.month + 1 if current_date.month < 12 else 1,
+                                      1, 0, 0, 0)
 
             #disable in Staging [2]
             last_journal = frappe.get_last_doc('Journal Entry', filters={'custom_report_type':'Billing','custom_is_jb_exported':'0','docstatus':'1'})
